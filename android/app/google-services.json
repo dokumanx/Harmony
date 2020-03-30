@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "451090683867",
+    "firebase_url": "https://harmony-ae2b2.firebaseio.com",
+    "project_id": "harmony-ae2b2",
+    "storage_bucket": "harmony-ae2b2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:451090683867:android:9268f97e272421f11a39fe",
+        "android_client_info": {
+          "package_name": "com.nhmcompany.harmony"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "451090683867-3sd5eh240ivrki4ii1itotbm9hnje975.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsUg6nd6AI_jv8lJ4JNFUynul-DnXl8Qk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "451090683867-3sd5eh240ivrki4ii1itotbm9hnje975.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
