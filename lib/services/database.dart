@@ -34,7 +34,7 @@ class DatabaseService {
     return UserData.fromDocumentSnapshot(uid, snapshot);
   }
 
-  // gel userData Stream
+  // get userData Stream
   Stream<UserData> get userData {
     return brewCollection.document(uid).snapshots().map(_userDataFromSnapshot);
   }

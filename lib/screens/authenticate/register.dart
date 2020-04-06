@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:harmony/services/auth_service.dart';
+import 'package:harmony/shared/birthdayDatePicker.dart';
 import 'package:harmony/shared/constants.dart';
 import 'package:harmony/shared/loading.dart';
 
@@ -83,6 +84,7 @@ class _RegisterState extends State<Register> {
                       SizedBox(
                         height: 20.0,
                       ),
+                      BirthdayDatePicker(),
                       RaisedButton(
                         color: Colors.pink[400],
                         child: Text(

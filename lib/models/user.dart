@@ -8,18 +8,19 @@ class User {
   final String uid;
   final String name;
   // TODO : Check the type after you actually use this field.
-  final String email;
   final FileImage fileImage;
   final Gender gender;
+  final String email;
   final DateTime registrationDate;
   final UserNotification notification;
-
+  final DateTime birthday;
   User(
       {this.uid,
       this.name,
       this.email,
       this.fileImage,
       this.gender,
+      this.birthday,
       this.registrationDate,
       this.notification});
 }
