@@ -1,7 +1,6 @@
-import 'dart:html';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:harmony/models/location.dart';
 import 'package:harmony/models/relative.dart';
 import 'package:harmony/models/todo_list.dart';
 import 'package:harmony/models/user.dart';

@@ -19,6 +19,8 @@ class UserRepository {
         idToken: googleAuth.idToken, accessToken: googleAuth.accessToken);
     await _firebaseAuth.signInWithCredential(credential);
     return _firebaseAuth.currentUser();
+
+    //TODO: Create User Firestore documents here.
   }
 
   Future<void> signInWithCredentials(String email, String password) {
@@ -29,6 +31,7 @@ class UserRepository {
   Future signUp({String email, String password}) async {
     return await _firebaseAuth.createUserWithEmailAndPassword(
         email: email, password: password);
+    //TODO: Create User Firestore documents here.
   }
 
   Future<void> singOut() {

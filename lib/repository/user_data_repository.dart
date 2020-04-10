@@ -1,7 +1,6 @@
-import 'dart:html';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:harmony/models/location.dart';
 import 'package:harmony/models/patient.dart';
 import 'package:harmony/models/relative.dart';
 import 'package:harmony/models/todo_list.dart';
@@ -11,7 +10,7 @@ import 'package:harmony/models/user_notification.dart';
 class UserDataRepository {
   final String _uid;
 
-  UserDataRepository(@required uid)
+  UserDataRepository({@required uid})
       : _uid = uid,
         assert(uid != null);
 

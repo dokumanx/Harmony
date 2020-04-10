@@ -25,6 +25,7 @@ class User {
       this.notification});
 }
 
+//TODO: Remove it later. It won't be necessary.
 class UserData {
   final String uid;
   final String name;

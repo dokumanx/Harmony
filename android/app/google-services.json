@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "451090683867-pvlrjk0gqau27rig5e6i4r4dliqtho4u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nhmcompany.harmony",
+            "certificate_hash": "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+          }
+        },
+        {
           "client_id": "451090683867-3sd5eh240ivrki4ii1itotbm9hnje975.apps.googleusercontent.com",
           "client_type": 3
         }
