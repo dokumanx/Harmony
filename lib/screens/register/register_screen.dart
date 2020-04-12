@@ -7,11 +7,11 @@ import 'package:harmony/screens/register/register_form.dart';
 class RegisterScreen extends StatelessWidget {
   final UserRepository _userRepository;
 
-  const RegisterScreen({Key key, userRepository})
+  RegisterScreen({Key key, userRepository})
       : _userRepository = userRepository,
         assert(userRepository != null),
         super(key: key);
-
+  final bool _isPatient = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +20,8 @@ class RegisterScreen extends StatelessWidget {
       ),
       body: Center(
         child: BlocProvider<RegisterBloc>(
-          create: (context) => RegisterBloc(userRepository: _userRepository),
+          create: (context) => RegisterBloc(
+              userRepository: _userRepository, isPatient: _isPatient),
           child: RegisterForm(),
         ),
       ),
