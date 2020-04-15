@@ -10,10 +10,14 @@ import '../../validators.dart';
 
 class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   final UserRepository _userRepository;
+  bool isPatient;
 
-  RegisterBloc({@required UserRepository userRepository})
-      : assert(userRepository != null),
-        _userRepository = userRepository;
+  RegisterBloc({
+    @required UserRepository userRepository,
+    @required bool isPatient,
+  })  : assert(userRepository != null),
+        _userRepository = userRepository,
+        isPatient = isPatient ?? false;
 
   @override
   RegisterState get initialState => RegisterState.empty();
@@ -40,6 +44,8 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       yield* _mapEmailChangedToState(event.email);
     } else if (event is PasswordChanged) {
       yield* _mapPasswordChangedToState(event.password);
+    } else if (event is UserTypeChanged) {
+      yield* _mapUserTypeChangedToState(event.isPatient);
     } else if (event is Submitted) {
       yield* _mapFormSubmittedToState(event.email, event.password);
     }
@@ -57,6 +63,11 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     );
   }
 
+  Stream<RegisterState> _mapUserTypeChangedToState(bool isPatient) async* {
+    this.isPatient = isPatient;
+    yield state.copyWith();
+  }
+
   Stream<RegisterState> _mapFormSubmittedToState(
     String email,
     String password,
@@ -64,9 +75,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     yield RegisterState.loading();
     try {
       await _userRepository.signUp(
-        email: email,
-        password: password,
-      );
+          email: email, password: password, isPatient: isPatient);
       yield RegisterState.success();
     } catch (_) {
       yield RegisterState.failure();

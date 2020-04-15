@@ -8,11 +8,11 @@ import 'package:harmony/models/user.dart';
 import 'package:harmony/models/user_notification.dart';
 
 class UserDataRepository {
-  final String _uid;
+  String _uid;
 
-  UserDataRepository({@required uid})
-      : _uid = uid,
-        assert(uid != null);
+  void userID(String uid) {
+    _uid = uid;
+  }
 
   final CollectionReference patientCollection =
       Firestore.instance.collection('patients');
@@ -30,16 +30,16 @@ class UserDataRepository {
       DateTime registrationDate,
       UserNotification notification}) async {
     return await relativeCollection.document(_uid).setData({
-      "patients": patients,
-      "faceModel": faceModel,
+      "patients": patients ?? [],
+      "faceModel": faceModel ?? 0,
       "uid": _uid,
       "name": name,
-      "email": email,
-      "fileImage": fileImage,
-      "gender": gender,
-      "birthday": birthday,
-      "registrationDate": registrationDate,
-      "notification": notification
+      "email": email ?? "unknown email",
+      "fileImage": fileImage ?? "No image",
+      "gender": gender ?? "Unknown",
+      "birthday": birthday ?? '01.01.1990',
+      "registrationDate": registrationDate ?? DateTime.now(),
+      "notification": notification ?? "Not available"
     });
   }
 
@@ -47,7 +47,6 @@ class UserDataRepository {
       {List<Relative> relatives,
       List<TodoList> todoList,
       Location location,
-      String uid,
       String name,
       String email,
       FileImage fileImage,
@@ -56,17 +55,17 @@ class UserDataRepository {
       DateTime registrationDate,
       UserNotification notification}) async {
     return await patientCollection.document(_uid).setData({
-      "relatives": relatives,
-      "todoList": todoList,
-      "location": location,
+      "relatives": relatives ?? [],
+      "todoList": todoList ?? [],
+      "location": location ?? "Not available",
       "uid": _uid,
-      "name": name,
-      "email": email,
-      "fileImage": fileImage,
-      "gender": gender,
-      "birthday": birthday,
-      "registrationDate": registrationDate,
-      "notification": notification
+      "name": name ?? "newUser",
+      "email": email ?? "unknown email",
+      "fileImage": fileImage ?? "No image",
+      "gender": gender ?? "Unknown",
+      "birthday": birthday ?? '01.01.1990',
+      "registrationDate": registrationDate ?? DateTime.now(),
+      "notification": notification ?? "Not available"
     });
   }
 

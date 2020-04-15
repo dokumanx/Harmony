@@ -1,14 +1,19 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:harmony/repository/user_data_repository.dart';
 
 class UserRepository {
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
+  final UserDataRepository _userDataRepository;
 
   UserRepository(
-      {FirebaseAuth firebaseAuth, GoogleSignIn googleSignIn, String uid})
+      {FirebaseAuth firebaseAuth,
+      GoogleSignIn googleSignIn,
+      UserDataRepository userDataRepository})
       : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-        _googleSignIn = googleSignIn ?? GoogleSignIn();
+        _googleSignIn = googleSignIn ?? GoogleSignIn(),
+        _userDataRepository = userDataRepository ?? UserDataRepository();
 
   ///Authentication methods begins,
 
@@ -18,9 +23,10 @@ class UserRepository {
     AuthCredential credential = GoogleAuthProvider.getCredential(
         idToken: googleAuth.idToken, accessToken: googleAuth.accessToken);
     await _firebaseAuth.signInWithCredential(credential);
+
     return _firebaseAuth.currentUser();
 
-    //TODO: Create User Firestore documents here.
+    //TODO: GoogleSingIn Could be disable
   }
 
   Future<void> signInWithCredentials(String email, String password) {
@@ -28,9 +34,23 @@ class UserRepository {
         email: email, password: password);
   }
 
-  Future signUp({String email, String password}) async {
-    return await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email, password: password);
+  Future<void> signUp({String email, String password, bool isPatient}) async {
+    AuthResult result = await _firebaseAuth
+        .createUserWithEmailAndPassword(email: email, password: password)
+        .catchError((e) => print(e.toString()));
+
+    String uid = result.user.uid;
+
+    if (isPatient != true) {
+      _userDataRepository
+        ..userID(uid)
+        ..updatePatientData(email: email);
+    } else if (isPatient = true) {
+      _userDataRepository
+        ..userID(uid)
+        ..updateRelativeData(email: email);
+    }
+
     //TODO: Create User Firestore documents here.
   }
 

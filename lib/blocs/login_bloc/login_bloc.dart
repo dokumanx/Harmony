@@ -9,10 +9,11 @@ import './login_bloc_export.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   UserRepository _userRepository;
-
-  LoginBloc({userRepository})
+  bool isPatient;
+  LoginBloc({userRepository, isPatient})
       : _userRepository = userRepository,
-        assert(userRepository != null);
+        assert(userRepository != null),
+        isPatient = isPatient ?? false;
 
   @override
   LoginState get initialState => LoginState.empty();
@@ -61,6 +62,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   Stream<LoginState> _mapLoginWithGooglePressedToState() async* {
     try {
       await _userRepository.signInWithGoogle();
+
       yield LoginState.success();
     } catch (e) {
       print(e);

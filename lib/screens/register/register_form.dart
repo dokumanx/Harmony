@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:harmony/blocs/authentication_bloc/authentication_bloc_export.dart';
 import 'package:harmony/blocs/register_bloc/register_bloc_export.dart';
+import 'package:harmony/screens/login/sign_in_switch.dart';
 import 'package:harmony/screens/register/register_button.dart';
 
 class RegisterForm extends StatefulWidget {
@@ -11,7 +12,6 @@ class RegisterForm extends StatefulWidget {
 class _RegisterFormState extends State<RegisterForm> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
   RegisterBloc _registerBloc;
 
   bool get isPopulated =>
@@ -75,6 +75,7 @@ class _RegisterFormState extends State<RegisterForm> {
           child: Form(
             child: ListView(
               children: <Widget>[
+                //TODO: Name, Gender, Birthday için TextFormField'ları ekle.
                 TextFormField(
                   controller: _emailController,
                   decoration: InputDecoration(
@@ -101,6 +102,7 @@ class _RegisterFormState extends State<RegisterForm> {
                     return !state.isPasswordValid ? 'Invalid Password' : null;
                   },
                 ),
+                SignInSwitch(),
                 RegisterButton(
                   onPressed:
                       isRegisterButtonEnabled(state) ? _onFormSubmitted : null,
