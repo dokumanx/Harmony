@@ -6,7 +6,7 @@ class HomeScreen extends StatelessWidget {
   final String name;
 
   const HomeScreen({Key key, this.name}) : super(key: key);
-
+  // TODO: Add tabs which include location, todos, and etc.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
