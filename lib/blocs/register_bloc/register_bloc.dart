@@ -5,7 +5,7 @@ import 'package:harmony/repository/user_repository.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 
-import './bloc.dart';
+import './register_bloc_export.dart';
 import '../../validators.dart';
 
 class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {

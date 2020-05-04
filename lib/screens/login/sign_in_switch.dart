@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:harmony/blocs/register_bloc/bloc.dart';
 import 'package:harmony/blocs/register_bloc/register_bloc.dart';
+import 'package:harmony/blocs/register_bloc/register_bloc_export.dart';
 
 class SignInSwitch extends StatefulWidget {
   final Function toggleSwitch;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:harmony/blocs/authentication_bloc/bloc.dart';
+import 'package:harmony/blocs/authentication_bloc/authentication_bloc_export.dart';
 
 class HomeScreen extends StatelessWidget {
   final String name;
