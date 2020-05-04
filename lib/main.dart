@@ -6,21 +6,37 @@ import 'package:harmony/repository/user_repository.dart';
 import 'package:harmony/screens/home_screen.dart';
 import 'package:harmony/screens/login/login_screen.dart';
 import 'package:harmony/screens/splash_screen.dart';
+import 'package:harmony/blocs/location_bloc/location_export.dart';
+import 'dart:async';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   BlocSupervisor.delegate = SimpleBlocDelegate();
   final UserRepository userRepository = UserRepository();
-  runApp(BlocProvider(
-      create: (context) =>
-          AuthenticationBloc(userRepository: userRepository)..add(AppStarted()),
+
+  runApp(MultiBlocProvider(
+      providers: [
+        BlocProvider(
+            create: (context) =>
+                AuthenticationBloc(userRepository: userRepository)
+                  ..add(AppStarted())),
+        BlocProvider(
+            create: (context) => LocationBloc()..add(LocationGetStarted())),
+      ],
       child: MyApp(
         userRepository: userRepository,
       )));
 }
 
+
+
+
+
+
+
 class MyApp extends StatelessWidget {
   final UserRepository _userRepository;
+
 
   MyApp({Key key, @required userRepository})
       : assert(userRepository != null),
