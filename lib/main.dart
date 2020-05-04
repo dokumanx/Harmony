@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:harmony/blocs/authentication_bloc/authentication_bloc_export.dart';
+import 'package:harmony/blocs/authentication_bloc/bloc.dart';
 import 'package:harmony/blocs/simple_bloc_delegate.dart';
 import 'package:harmony/repository/user_repository.dart';
 import 'package:harmony/screens/home_screen.dart';

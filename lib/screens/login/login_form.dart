@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:harmony/blocs/authentication_bloc/authentication_bloc_export.dart';
-import "package:harmony/blocs/login_bloc/login_bloc_export.dart";
+import 'package:harmony/blocs/authentication_bloc/bloc.dart';
+import "package:harmony/blocs/login_bloc/bloc.dart";
 import 'package:harmony/repository/user_repository.dart';
 
 import 'create_account_button.dart';
