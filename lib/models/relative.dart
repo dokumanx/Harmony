@@ -11,6 +11,7 @@ class Relative extends User {
   Relative(
       {this.patients,
       this.faceModel,
+      UserType userType,
       String uid,
       String name,
       String email,
@@ -20,6 +21,7 @@ class Relative extends User {
       DateTime registrationDate,
       UserNotification notification})
       : super(
+            userType: userType,
             uid: uid,
             name: name,
             email: email,
@@ -33,6 +35,7 @@ class Relative extends User {
     return Relative(
       patients: snapshot.data["patients"],
       faceModel: snapshot.data["faceModel"],
+      userType: snapshot.data["userType"],
       uid: snapshot.data["uid"],
       name: snapshot.data["name"],
       email: snapshot.data["email"],

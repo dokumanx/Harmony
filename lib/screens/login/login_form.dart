@@ -1,21 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:harmony/blocs/authentication_bloc/authentication_bloc_export.dart';
-import "package:harmony/blocs/login_bloc/login_bloc_export.dart";
-import 'package:harmony/repository/user_repository.dart';
+import 'package:harmony/blocs/authentication_bloc/bloc.dart';
+import "package:harmony/blocs/login_bloc/bloc.dart";
 
 import 'create_account_button.dart';
 import 'google_login_button.dart';
 import 'login_button.dart';
 
 class LoginForm extends StatefulWidget {
-  final UserRepository _userRepository;
-
-  const LoginForm({Key key, userRepository})
-      : _userRepository = userRepository,
-        assert(userRepository != null),
-        super(key: key);
-
   @override
   _LoginFormState createState() => _LoginFormState();
 }
@@ -25,8 +17,6 @@ class _LoginFormState extends State<LoginForm> {
   final TextEditingController _passwordController = TextEditingController();
 
   LoginBloc _loginBloc;
-
-  UserRepository get _userRepository => widget._userRepository;
 
   bool get isPopulated =>
       _emailController.text.isNotEmpty && _passwordController.text.isNotEmpty;
@@ -127,7 +117,7 @@ class _LoginFormState extends State<LoginForm> {
                               : null,
                         ),
                         GoogleLoginButton(),
-                        CreateAccountButton(userRepository: _userRepository),
+                        CreateAccountButton(),
                       ],
                     ),
                   ),

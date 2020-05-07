@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:harmony/models/user.dart';
 import 'package:harmony/repository/user_data_repository.dart';
 
 class UserRepository {
@@ -44,14 +45,12 @@ class UserRepository {
     if (isPatient != true) {
       _userDataRepository
         ..userID(uid)
-        ..updatePatientData(email: email);
+        ..updatePatientData(email: email, userType: UserType.patient);
     } else if (isPatient = true) {
       _userDataRepository
         ..userID(uid)
-        ..updateRelativeData(email: email);
+        ..updateRelativeData(email: email, userType: UserType.relative);
     }
-
-    //TODO: Create User Firestore documents here.
   }
 
   Future<void> singOut() {

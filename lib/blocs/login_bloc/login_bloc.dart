@@ -5,7 +5,7 @@ import 'package:harmony/repository/user_repository.dart';
 import 'package:harmony/validators.dart';
 import 'package:rxdart/rxdart.dart';
 
-import './login_bloc_export.dart';
+import './bloc.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   UserRepository _userRepository;

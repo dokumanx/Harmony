@@ -15,6 +15,7 @@ class Patient extends User {
       {this.relatives,
       this.todoList,
       this.location,
+      UserType userType,
       String uid,
       String name,
       String email,
@@ -24,6 +25,7 @@ class Patient extends User {
       DateTime registrationDate,
       UserNotification notification})
       : super(
+            userType: userType,
             uid: uid,
             name: name,
             email: email,
@@ -35,17 +37,18 @@ class Patient extends User {
 
   factory Patient.patientFromDocumentSnapshot(DocumentSnapshot snapshot) {
     return Patient(
-      notification: snapshot.data["notification"],
-      registrationDate: snapshot.data["registrationDate"],
-      birthday: snapshot.data["birthday"],
-      gender: snapshot.data["gender"],
-      fileImage: snapshot.data["fileImage"],
-      email: snapshot.data["email"],
-      name: snapshot.data["name"],
-      uid: snapshot.data["uid"],
-      location: snapshot.data["location"],
       relatives: snapshot.data["relatives"],
       todoList: snapshot.data["todoList"],
+      location: snapshot.data["location"],
+      userType: snapshot.data["userType"],
+      uid: snapshot.data["uid"],
+      name: snapshot.data["name"],
+      email: snapshot.data["email"],
+      fileImage: snapshot.data["fileImage"],
+      gender: snapshot.data["gender"],
+      birthday: snapshot.data["birthday"],
+      registrationDate: snapshot.data["registrationDate"],
+      notification: snapshot.data["notification"],
     );
   }
 }

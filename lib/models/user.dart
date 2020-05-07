@@ -1,10 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:harmony/models/user_notification.dart';
 
 enum Gender { male, female }
+enum UserType { patient, relative }
 
 class User {
+  final UserType userType;
   final String uid;
   final String name;
   // TODO : Check the type after you actually use this field.
@@ -15,7 +16,8 @@ class User {
   final UserNotification notification;
   final DateTime birthday;
   User(
-      {this.uid,
+      {this.userType,
+      this.uid,
       this.name,
       this.email,
       this.fileImage,
@@ -23,23 +25,4 @@ class User {
       this.birthday,
       this.registrationDate,
       this.notification});
-}
-
-//TODO: Remove it later. It won't be necessary.
-class UserData {
-  final String uid;
-  final String name;
-  final String sugars;
-  final int strength;
-
-  UserData({this.uid, this.name, this.sugars, this.strength});
-
-  factory UserData.fromDocumentSnapshot(
-      String uid, DocumentSnapshot documentSnapshot) {
-    return UserData(
-        uid: uid,
-        name: documentSnapshot.data['name'],
-        sugars: documentSnapshot.data['sugars'],
-        strength: documentSnapshot.data['strength']);
-  }
 }

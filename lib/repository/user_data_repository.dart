@@ -14,14 +14,13 @@ class UserDataRepository {
     _uid = uid;
   }
 
-  final CollectionReference patientCollection =
-      Firestore.instance.collection('patients');
-  final CollectionReference relativeCollection =
-      Firestore.instance.collection('relatives');
+  final CollectionReference usersCollection =
+      Firestore.instance.collection('users');
 
   Future<void> updateRelativeData(
       {List<Patient> patients,
       int faceModel,
+      UserType userType,
       String name,
       String email,
       FileImage fileImage,
@@ -29,9 +28,10 @@ class UserDataRepository {
       DateTime birthday,
       DateTime registrationDate,
       UserNotification notification}) async {
-    return await relativeCollection.document(_uid).setData({
+    return await usersCollection.document(_uid).setData({
       "patients": patients ?? [],
       "faceModel": faceModel ?? 0,
+      "userType": userType == UserType.patient ? "Patient" : "Relative",
       "uid": _uid,
       "name": name,
       "email": email ?? "unknown email",
@@ -46,6 +46,7 @@ class UserDataRepository {
   Future<void> updatePatientData(
       {List<Relative> relatives,
       List<TodoList> todoList,
+      UserType userType,
       Location location,
       String name,
       String email,
@@ -54,10 +55,11 @@ class UserDataRepository {
       DateTime birthday,
       DateTime registrationDate,
       UserNotification notification}) async {
-    return await patientCollection.document(_uid).setData({
+    return await usersCollection.document(_uid).setData({
       "relatives": relatives ?? [],
       "todoList": todoList ?? [],
       "location": location ?? "Not available",
+      "userType": userType == UserType.patient ? "Patient" : "Relative",
       "uid": _uid,
       "name": name ?? "newUser",
       "email": email ?? "unknown email",
@@ -74,7 +76,7 @@ class UserDataRepository {
   }
 
   Stream<Relative> get getRelative {
-    return relativeCollection
+    return usersCollection
         .document(_uid)
         .snapshots()
         .map(_relativeDataFromSnapshot);
@@ -85,9 +87,14 @@ class UserDataRepository {
   }
 
   Stream<Patient> get getPatient {
-    return patientCollection
+    return usersCollection
         .document(_uid)
         .snapshots()
         .map(_patientDataFromSnaphot);
+  }
+
+  Future<String> getUser({String uid}) async {
+    DocumentSnapshot userData = await usersCollection.document(uid).get();
+    return userData.data['userType'];
   }
 }
