@@ -15,12 +15,7 @@ class ShareAccountScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return RepositoryProvider(
       create: (context) => UserDataRepository(),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("Share Account"),
-        ),
-        body: ReturnProperUser(),
-      ),
+      child: ReturnProperUser(),
     );
   }
 }
@@ -33,21 +28,24 @@ class ReturnProperUser extends StatefulWidget {
 class _ReturnProperUserState extends State<ReturnProperUser> {
   @override
   Widget build(BuildContext context) {
-    UserDataRepository _userDataRepository =
-        RepositoryProvider.of<UserDataRepository>(context);
+    UserDataRepository _userDataRepository;
 
     return BlocBuilder<AuthenticationBloc, AuthenticationState>(
       builder: (context, state) {
         if (state is Authenticated) {
+          _userDataRepository = UserDataRepository(uid: state.displayUid);
+
           return FutureBuilder(
-              future: _userDataRepository.getUser(uid: state.displayUid),
+              future: _userDataRepository.getUser(),
               builder: (context, snapshot) {
                 if (snapshot.hasData)
-                  return identical(snapshot.data, "Parent")
-                      ? PatientShareAccountScreen()
-                      : RelativeShareAccountScreen();
+                  return (snapshot.data == "Patient")
+                      ? PatientShareAccountScreen(
+                          userDataRepository: _userDataRepository)
+                      : RelativeShareAccountScreen(
+                          userDataRepository: _userDataRepository);
 
-                return CircularProgressIndicator();
+                return Center(child: CircularProgressIndicator());
               });
 
 //              ? PatientShareAccountScreen()

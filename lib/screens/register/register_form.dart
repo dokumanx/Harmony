@@ -75,7 +75,6 @@ class _RegisterFormState extends State<RegisterForm> {
           child: Form(
             child: ListView(
               children: <Widget>[
-                //TODO: Name, Gender, Birthday için TextFormField'ları ekle.
                 TextFormField(
                   controller: _emailController,
                   decoration: InputDecoration(

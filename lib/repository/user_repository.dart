@@ -6,15 +6,12 @@ import 'package:harmony/repository/user_data_repository.dart';
 class UserRepository {
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
-  final UserDataRepository _userDataRepository;
 
-  UserRepository(
-      {FirebaseAuth firebaseAuth,
-      GoogleSignIn googleSignIn,
-      UserDataRepository userDataRepository})
-      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-        _googleSignIn = googleSignIn ?? GoogleSignIn(),
-        _userDataRepository = userDataRepository ?? UserDataRepository();
+  UserRepository({
+    FirebaseAuth firebaseAuth,
+    GoogleSignIn googleSignIn,
+  })  : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
+        _googleSignIn = googleSignIn ?? GoogleSignIn();
 
   ///Authentication methods begins,
 
@@ -41,15 +38,13 @@ class UserRepository {
         .catchError((e) => print(e.toString()));
 
     String uid = result.user.uid;
-
+    UserDataRepository _userDataRepository = UserDataRepository(uid: uid);
     if (isPatient != true) {
       _userDataRepository
-        ..userID(uid)
-        ..updatePatientData(email: email, userType: UserType.patient);
+        ..setPatientData(email: email, userType: UserType.patient);
     } else if (isPatient = true) {
       _userDataRepository
-        ..userID(uid)
-        ..updateRelativeData(email: email, userType: UserType.relative);
+        ..setRelativeData(email: email, userType: UserType.relative);
     }
   }
 

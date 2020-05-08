@@ -10,14 +10,12 @@ import 'package:harmony/models/user_notification.dart';
 class UserDataRepository {
   String _uid;
 
-  void userID(String uid) {
-    _uid = uid;
-  }
+  UserDataRepository({uid}) : _uid = uid;
 
+  // TODO : Uid returns null
   final CollectionReference usersCollection =
       Firestore.instance.collection('users');
-
-  Future<void> updateRelativeData(
+  Future<void> setRelativeData(
       {List<Patient> patients,
       int faceModel,
       UserType userType,
@@ -39,11 +37,11 @@ class UserDataRepository {
       "gender": gender ?? "Unknown",
       "birthday": birthday ?? '01.01.1990',
       "registrationDate": registrationDate ?? DateTime.now(),
-      "notification": notification ?? "Not available"
+      "notification": notification ?? "Not available",
     });
   }
 
-  Future<void> updatePatientData(
+  Future<void> setPatientData(
       {List<Relative> relatives,
       List<TodoList> todoList,
       UserType userType,
@@ -93,8 +91,8 @@ class UserDataRepository {
         .map(_patientDataFromSnaphot);
   }
 
-  Future<String> getUser({String uid}) async {
-    DocumentSnapshot userData = await usersCollection.document(uid).get();
+  Future<String> getUser() async {
+    DocumentSnapshot userData = await usersCollection.document(_uid).get();
     return userData.data['userType'];
   }
 }
