@@ -19,12 +19,12 @@ class Patient extends User {
       String uid,
       String name,
       String email,
-        //TODO : Change fileImage type from String to FileImage
-        String fileImage,
+      //TODO : Change fileImage type from String to FileImage
+      String fileImage,
       Gender gender,
       DateTime birthday,
       DateTime registrationDate,
-        String notification})
+      String notification})
       : super(
             userType: userType,
             uid: uid,
