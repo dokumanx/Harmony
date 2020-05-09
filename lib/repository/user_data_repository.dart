@@ -43,7 +43,7 @@ class UserDataRepository {
       "fileImage": fileImage ?? "No image",
       "gender": gender ?? "Unknown",
       "birthday": birthday ?? '1990-01-01',
-      "registrationDate": registrationDate ?? Timestamp.now(),
+      "registrationDate": registrationDate ?? DateTime.now().toIso8601String(),
       "notification": notification ?? "Not available",
     });
   }
