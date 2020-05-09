@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:harmony/models/user.dart';
@@ -6,12 +8,15 @@ import 'package:harmony/repository/user_data_repository.dart';
 class UserRepository {
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
+  final UserDataRepository _userDataRepository;
+  String uid;
 
-  UserRepository({
-    FirebaseAuth firebaseAuth,
+  UserRepository({FirebaseAuth firebaseAuth,
     GoogleSignIn googleSignIn,
-  })  : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-        _googleSignIn = googleSignIn ?? GoogleSignIn();
+    UserDataRepository userDataRepository})
+      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
+        _googleSignIn = googleSignIn ?? GoogleSignIn(),
+        _userDataRepository = userDataRepository ?? UserDataRepository();
 
   ///Authentication methods begins,
 
@@ -32,19 +37,23 @@ class UserRepository {
         email: email, password: password);
   }
 
-  Future<void> signUp({String email, String password, bool isPatient}) async {
-    AuthResult result = await _firebaseAuth
+  Future<void> signUp({String email, String password, bool isRelative}) async {
+    AuthResult _authResult = await _firebaseAuth
         .createUserWithEmailAndPassword(email: email, password: password)
         .catchError((e) => print(e.toString()));
 
-    String uid = result.user.uid;
-    UserDataRepository _userDataRepository = UserDataRepository(uid: uid);
-    if (isPatient != true) {
+    if (isRelative != true) {
       _userDataRepository
-        ..setPatientData(email: email, userType: UserType.patient);
-    } else if (isPatient = true) {
+        ..setPatientData(
+            email: email,
+            userType: UserType.patient,
+            uid: _authResult.user.uid);
+    } else if (isRelative = true) {
       _userDataRepository
-        ..setRelativeData(email: email, userType: UserType.relative);
+        ..setRelativeData(
+            email: email,
+            userType: UserType.relative,
+            uid: _authResult.user.uid);
     }
   }
 

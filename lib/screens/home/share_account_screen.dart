@@ -4,8 +4,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:harmony/blocs/authentication_bloc/authentication_bloc.dart';
-import 'package:harmony/blocs/authentication_bloc/authentication_state.dart';
 import 'package:harmony/repository/user_data_repository.dart';
 import 'package:harmony/screens/home/patient_share_account_screen.dart';
 import 'package:harmony/screens/home/releative_share_account_screen.dart';
@@ -28,32 +26,18 @@ class ReturnProperUser extends StatefulWidget {
 class _ReturnProperUserState extends State<ReturnProperUser> {
   @override
   Widget build(BuildContext context) {
-    UserDataRepository _userDataRepository;
+    UserDataRepository _userDataRepository =
+    RepositoryProvider.of<UserDataRepository>(context);
 
-    return BlocBuilder<AuthenticationBloc, AuthenticationState>(
-      builder: (context, state) {
-        if (state is Authenticated) {
-          _userDataRepository = UserDataRepository(uid: state.displayUid);
+    return FutureBuilder(
+        future: _userDataRepository.getUserType(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData)
+            return (snapshot.data == "Patient")
+                ? PatientShareAccountScreen()
+                : RelativeShareAccountScreen();
 
-          return FutureBuilder(
-              future: _userDataRepository.getUser(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData)
-                  return (snapshot.data == "Patient")
-                      ? PatientShareAccountScreen(
-                          userDataRepository: _userDataRepository)
-                      : RelativeShareAccountScreen(
-                          userDataRepository: _userDataRepository);
-
-                return Center(child: CircularProgressIndicator());
-              });
-
-//              ? PatientShareAccountScreen()
-//              : RelativeShareAccountScreen();
-        }
-
-        return Container();
-      },
-    );
+          return Center(child: CircularProgressIndicator());
+        });
   }
 }

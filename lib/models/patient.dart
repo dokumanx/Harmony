@@ -1,14 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:harmony/models/location.dart';
-import 'package:harmony/models/todo_list.dart';
 import 'package:harmony/models/user.dart';
-import 'package:harmony/models/user_notification.dart';
 
 class Patient extends User {
+  // TODO: Change relatives list to actual Relative List
   final List<String> relatives;
-  final List<TodoList> todoList;
-  final Location location;
+
+  // TODO: Change todoList List to actual TodoList List
+  final List<String> todoList;
+
+  // TODO: Change location to actual Location
+  final String location;
 
   Patient(
       {this.relatives,
@@ -18,11 +19,12 @@ class Patient extends User {
       String uid,
       String name,
       String email,
-      FileImage fileImage,
+        //TODO : Change fileImage type from String to FileImage
+        String fileImage,
       Gender gender,
       DateTime birthday,
       DateTime registrationDate,
-      UserNotification notification})
+        String notification})
       : super(
             userType: userType,
             uid: uid,
@@ -36,17 +38,19 @@ class Patient extends User {
 
   factory Patient.patientFromDocumentSnapshot(DocumentSnapshot snapshot) {
     return Patient(
-      relatives: snapshot.data["relatives"],
-      todoList: snapshot.data["todoList"],
+      relatives: List<String>.from(snapshot.data["relatives"]),
+      todoList: List<String>.from(snapshot.data["todoList"]),
       location: snapshot.data["location"],
-      userType: snapshot.data["userType"],
+      userType: snapshot.data["userType"] == 'Patient'
+          ? UserType.patient
+          : UserType.relative,
       uid: snapshot.data["uid"],
       name: snapshot.data["name"],
       email: snapshot.data["email"],
       fileImage: snapshot.data["fileImage"],
-      gender: snapshot.data["gender"],
-      birthday: snapshot.data["birthday"],
-      registrationDate: snapshot.data["registrationDate"],
+      gender: snapshot.data["gender"] == 'Male' ? Gender.male : Gender.female,
+      birthday: DateTime.parse(snapshot.data["birthday"]),
+      registrationDate: DateTime.parse(snapshot.data["registrationDate"]),
       notification: snapshot.data["notification"],
     );
   }

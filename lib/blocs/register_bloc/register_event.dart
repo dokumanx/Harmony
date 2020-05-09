@@ -33,15 +33,15 @@ class PasswordChanged extends RegisterEvent {
 }
 
 class UserTypeChanged extends RegisterEvent {
-  final bool isPatient;
+  final bool isRelative;
 
-  const UserTypeChanged({@required this.isPatient});
-
-  @override
-  List<Object> get props => [isPatient];
+  const UserTypeChanged({@required this.isRelative});
 
   @override
-  String toString() => 'isPatient {isPatient: $isPatient}';
+  List<Object> get props => [isRelative];
+
+  @override
+  String toString() => 'isPatient {isPatient: $isRelative}';
 }
 
 class Submitted extends RegisterEvent {

@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:harmony/repository/user_data_repository.dart';
 
 class RelativeShareAccountScreen extends StatefulWidget {
-  final UserDataRepository userDataRepository;
-
-  const RelativeShareAccountScreen({ this.userDataRepository}) ;
-
   @override
   _RelativeShareAccountScreenState createState() =>
       _RelativeShareAccountScreenState();

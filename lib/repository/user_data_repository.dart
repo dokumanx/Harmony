@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:harmony/models/location.dart';
 import 'package:harmony/models/patient.dart';
@@ -8,17 +9,22 @@ import 'package:harmony/models/user.dart';
 import 'package:harmony/models/user_notification.dart';
 
 class UserDataRepository {
-  String _uid;
-
-  UserDataRepository({uid}) : _uid = uid;
-
-  // TODO : Uid returns null
   final CollectionReference usersCollection =
       Firestore.instance.collection('users');
+
+  String _userEmail;
+
+  Future<String> getUserEmail() async {
+    FirebaseUser _user = await FirebaseAuth.instance.currentUser();
+    _userEmail = _user.email;
+    return _userEmail;
+  }
+
   Future<void> setRelativeData(
       {List<Patient> patients,
       int faceModel,
       UserType userType,
+        String uid,
       String name,
       String email,
       FileImage fileImage,
@@ -26,17 +32,18 @@ class UserDataRepository {
       DateTime birthday,
       DateTime registrationDate,
       UserNotification notification}) async {
-    return await usersCollection.document(_uid).setData({
+    await getUserEmail();
+    return await usersCollection.document(_userEmail).setData({
       "patients": patients ?? [],
       "faceModel": faceModel ?? 0,
       "userType": userType == UserType.patient ? "Patient" : "Relative",
-      "uid": _uid,
-      "name": name,
-      "email": email ?? "unknown email",
+      "uid": uid,
+      "name": name ?? email,
+      "email": email,
       "fileImage": fileImage ?? "No image",
       "gender": gender ?? "Unknown",
-      "birthday": birthday ?? '01.01.1990',
-      "registrationDate": registrationDate ?? DateTime.now(),
+      "birthday": birthday ?? '1990-01-01',
+      "registrationDate": registrationDate ?? Timestamp.now(),
       "notification": notification ?? "Not available",
     });
   }
@@ -46,6 +53,7 @@ class UserDataRepository {
       List<TodoList> todoList,
       UserType userType,
       Location location,
+        String uid,
       String name,
       String email,
       FileImage fileImage,
@@ -53,18 +61,19 @@ class UserDataRepository {
       DateTime birthday,
       DateTime registrationDate,
       UserNotification notification}) async {
-    return await usersCollection.document(_uid).setData({
+    await getUserEmail();
+    return await usersCollection.document(_userEmail).setData({
       "relatives": relatives ?? [],
       "todoList": todoList ?? [],
       "location": location ?? "Not available",
       "userType": userType == UserType.patient ? "Patient" : "Relative",
-      "uid": _uid,
-      "name": name ?? "newUser",
-      "email": email ?? "unknown email",
+      "uid": uid,
+      "name": name ?? email,
+      "email": email,
       "fileImage": fileImage ?? "No image",
       "gender": gender ?? "Unknown",
-      "birthday": birthday ?? '01.01.1990',
-      "registrationDate": registrationDate ?? DateTime.now(),
+      "birthday": birthday ?? '1990-01-01',
+      "registrationDate": registrationDate ?? DateTime.now().toIso8601String(),
       "notification": notification ?? "Not available"
     });
   }
@@ -75,7 +84,7 @@ class UserDataRepository {
 
   Stream<Relative> get getRelative {
     return usersCollection
-        .document(_uid)
+        .document()
         .snapshots()
         .map(_relativeDataFromSnapshot);
   }
@@ -84,15 +93,18 @@ class UserDataRepository {
     return Patient.patientFromDocumentSnapshot(snapshot);
   }
 
+  //TODO: Null döndürüyo
   Stream<Patient> get getPatient {
     return usersCollection
-        .document(_uid)
+        .document(_userEmail)
         .snapshots()
         .map(_patientDataFromSnaphot);
   }
 
-  Future<String> getUser() async {
-    DocumentSnapshot userData = await usersCollection.document(_uid).get();
+  Future<String> getUserType() async {
+    await getUserEmail();
+    DocumentSnapshot userData =
+    await usersCollection.document(_userEmail).get();
     return userData.data['userType'];
   }
 }

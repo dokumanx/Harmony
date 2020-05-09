@@ -10,14 +10,14 @@ import '../../validators.dart';
 
 class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   final UserRepository _userRepository;
-  bool isPatient;
+  bool isRelative;
 
   RegisterBloc({
     @required UserRepository userRepository,
-    @required bool isPatient,
+    @required bool isRelative,
   })  : assert(userRepository != null),
         _userRepository = userRepository,
-        isPatient = isPatient ?? false;
+        isRelative = isRelative ?? false;
 
   @override
   RegisterState get initialState => RegisterState.empty();
@@ -45,7 +45,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     } else if (event is PasswordChanged) {
       yield* _mapPasswordChangedToState(event.password);
     } else if (event is UserTypeChanged) {
-      yield* _mapUserTypeChangedToState(event.isPatient);
+      yield* _mapUserTypeChangedToState(event.isRelative);
     } else if (event is Submitted) {
       yield* _mapFormSubmittedToState(event.email, event.password);
     }
@@ -63,8 +63,8 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     );
   }
 
-  Stream<RegisterState> _mapUserTypeChangedToState(bool isPatient) async* {
-    this.isPatient = isPatient;
+  Stream<RegisterState> _mapUserTypeChangedToState(bool isRelative) async* {
+    this.isRelative = isRelative;
     yield state.copyWith();
   }
 
@@ -75,7 +75,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     yield RegisterState.loading();
     try {
       await _userRepository.signUp(
-          email: email, password: password, isPatient: isPatient);
+          email: email, password: password, isRelative: isRelative);
       yield RegisterState.success();
     } catch (_) {
       yield RegisterState.failure();

@@ -13,7 +13,7 @@ class SignInSwitch extends StatefulWidget {
 }
 
 class _SignInSwitchState extends State<SignInSwitch> {
-  bool isPatient = false;
+  bool isRelative = false;
   RegisterBloc _registerBloc;
   @override
   void initState() {
@@ -27,11 +27,11 @@ class _SignInSwitchState extends State<SignInSwitch> {
       children: <Widget>[
         Text('As Patient'),
         Switch(
-          value: isPatient,
+          value: isRelative,
           onChanged: (value) {
             setState(() {
-              isPatient = value;
-              _registerBloc.add(UserTypeChanged(isPatient: isPatient));
+              isRelative = value;
+              _registerBloc.add(UserTypeChanged(isRelative: isRelative));
             });
           },
           activeColor: Colors.purple[200],

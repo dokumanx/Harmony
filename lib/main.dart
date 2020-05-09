@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:harmony/blocs/authentication_bloc/bloc.dart';
 import 'package:harmony/blocs/simple_bloc_delegate.dart';
 import 'package:harmony/repository/user_data_repository.dart';
@@ -52,6 +53,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+          textTheme: GoogleFonts.montserratTextTheme(
+            Theme
+                .of(context)
+                .textTheme,
+          )),
       debugShowCheckedModeBanner: false,
       home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
         builder: (context, state) {

@@ -1,6 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:harmony/models/user_notification.dart';
-
 enum Gender { male, female }
 enum UserType { patient, relative }
 
@@ -9,11 +6,13 @@ class User {
   final String uid;
   final String name;
   // TODO : Check the type after you actually use this field.
-  final FileImage fileImage;
+  final String fileImage;
   final Gender gender;
   final String email;
   final DateTime registrationDate;
-  final UserNotification notification;
+
+  //TODO: Change notification type from String to [UserNotification]
+  final String notification;
   final DateTime birthday;
   User(
       {this.userType,

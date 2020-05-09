@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:harmony/repository/user_data_repository.dart';
 import 'package:harmony/repository/user_repository.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class PatientShareAccountScreen extends StatefulWidget {
-  final UserDataRepository userDataRepository;
-
-  const PatientShareAccountScreen({this.userDataRepository});
-
   @override
   _PatientShareAccountScreenState createState() =>
       _PatientShareAccountScreenState();
@@ -32,9 +29,7 @@ class _PatientShareAccountScreenState extends State<PatientShareAccountScreen> {
         children: <Widget>[
           Expanded(
             flex: 3,
-            child: ShowRelativeListTile(
-              userDataRepository: widget.userDataRepository,
-            ),
+            child: ShowRelativeListTile(),
           ),
           Expanded(
             flex: 1,
@@ -49,34 +44,32 @@ class _PatientShareAccountScreenState extends State<PatientShareAccountScreen> {
 /// ListTile of Relatives
 
 class ShowRelativeListTile extends StatelessWidget {
-  // TODO: Wrap this with StreamBuilder to track changes
-  final UserDataRepository _userDataRepository;
-
-  const ShowRelativeListTile({userDataRepository})
-      : _userDataRepository = userDataRepository;
-
   @override
   Widget build(BuildContext context) {
+    UserDataRepository _userDataRepository =
+    RepositoryProvider.of<UserDataRepository>(context);
     return StreamBuilder(
       stream: _userDataRepository.getPatient,
       builder: (context, snapshot) {
-        return snapshot.hasData
-            ? Container(
+        if (snapshot.connectionState == ConnectionState.active) {
+          if (snapshot.hasData) {
+            if (snapshot.data.relatives.length != 0) {
+              return Container(
                 child: ListView.builder(
-                  itemCount: snapshot.data.length,
+                  itemCount: snapshot.data.relatives.length,
                   itemBuilder: (context, index) {
                     return Card(
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),
                       child: ListTile(
-                        leading: MyCircleAvatar(index: index),
+                        leading:
+                        MyCircleAvatar(index: index, snapshot: snapshot),
                         title: Text(
-                          _dummyData[index],
+                          snapshot.data.name,
                         ),
                         trailing: IconButton(
-                          icon: Icon(
-                            Icons.delete_forever,
-                            color: Colors.red,
+                          icon: FaIcon(
+                            FontAwesomeIcons.userAltSlash,
                           ),
                           onPressed: () {
                             // TODO: Delete Relative From FireStore
@@ -86,10 +79,26 @@ class ShowRelativeListTile extends StatelessWidget {
                     );
                   },
                 ),
-              )
-            : Container(
-                child: Center(child: Text('No Data Founded')),
               );
+            } else {
+              return Container(
+                child: Center(
+                    child: Text(
+                      'No Relative Founded',
+                      style: TextStyle(fontSize: 24),
+                    )),
+              );
+            }
+          }
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+        return Container(
+          child: Center(
+            child: Text('An error occured. Please try again.'),
+          ),
+        );
       },
     );
   }
@@ -99,15 +108,18 @@ class ShowRelativeListTile extends StatelessWidget {
 
 class MyCircleAvatar extends CircleAvatar {
   final int _index;
+  final AsyncSnapshot _snapshot;
 
-  const MyCircleAvatar({index}) : _index = index;
+  const MyCircleAvatar({index, snapshot})
+      : _index = index,
+        _snapshot = snapshot;
 
   @override
   Widget build(BuildContext context) {
     return CircleAvatar(
         maxRadius: 22,
         child: Container(
-          child: Text(_dummyData[_index].substring(0, 1).toUpperCase()),
+          child: Text(_snapshot.data.name.substring(0, 1).toUpperCase()),
         ));
   }
 }

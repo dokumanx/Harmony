@@ -9,7 +9,6 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final UserRepository _userRepository =
         RepositoryProvider.of<UserRepository>(context);
-    ;
 
     return Scaffold(
       appBar: AppBar(
