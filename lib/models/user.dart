@@ -1,4 +1,3 @@
-enum Gender { male, female }
 enum UserType { patient, relative }
 
 class User {
@@ -25,3 +24,5 @@ class User {
       this.registrationDate,
       this.notification});
 }
+
+enum Gender { male, female }

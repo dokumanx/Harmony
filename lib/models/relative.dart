@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:harmony/models/patient.dart';
 import 'package:harmony/models/user.dart';
 
 class Relative extends User {
-  final List<String> patients;
+  final List<Patient> patients;
   final int faceModel;
 
   Relative(
@@ -12,12 +15,12 @@ class Relative extends User {
       String uid,
       String name,
       String email,
-        //TODO : Change fileImage type from String to FileImage
-        String fileImage,
+      //TODO : Change fileImage type from String to FileImage
+      String fileImage,
       Gender gender,
       DateTime birthday,
       DateTime registrationDate,
-        String notification})
+      String notification})
       : super(
             userType: userType,
             uid: uid,
@@ -30,9 +33,13 @@ class Relative extends User {
             notification: notification);
 
   factory Relative.relativeFromDocumentSnapshot(DocumentSnapshot snapshot) {
+    final jsonResponse = jsonDecode(snapshot.data["patients"].toString());
+
+    PatientList patientList = PatientList.fromJson(jsonResponse);
+
     return Relative(
-      patients: List<String>.from(snapshot.data["patients"]),
-      faceModel: snapshot.data["faceModel"],
+      patients: patientList.patients,
+      faceModel: snapshot.data["faceModel"] ?? 0,
       userType: snapshot.data["userType"] == 'Patient'
           ? UserType.patient
           : UserType.relative,
@@ -45,5 +52,26 @@ class Relative extends User {
       registrationDate: DateTime.parse(snapshot.data["registrationDate"]),
       notification: snapshot.data["notification"],
     );
+  }
+
+  factory Relative.fromJson(Map<String, dynamic> parsedJson) {
+    return Relative(
+      name: parsedJson["name"] ?? "",
+      email: parsedJson["email"] ?? "",
+    );
+  }
+
+  Map<String, dynamic> toJson() => {"name": this.name, "email": this.email};
+}
+
+class RelativeList {
+  final List<Relative> relatives;
+
+  RelativeList(this.relatives);
+
+  factory RelativeList.fromJson(List<dynamic> parsedJson) {
+    List<Relative> relatives = List<Relative>.from(
+        parsedJson.map((i) => Relative.fromJson(i)).toList());
+    return RelativeList(relatives);
   }
 }

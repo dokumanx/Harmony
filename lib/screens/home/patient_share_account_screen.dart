@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:harmony/repository/user_data_repository.dart';
-import 'package:harmony/repository/user_repository.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class PatientShareAccountScreen extends StatefulWidget {
@@ -10,8 +9,6 @@ class PatientShareAccountScreen extends StatefulWidget {
   _PatientShareAccountScreenState createState() =>
       _PatientShareAccountScreenState();
 }
-
-List<String> _dummyData = ["Nahit", "Mohsen", "Hüseyin"];
 
 class _PatientShareAccountScreenState extends State<PatientShareAccountScreen> {
   @override
@@ -21,6 +18,9 @@ class _PatientShareAccountScreenState extends State<PatientShareAccountScreen> {
 
   @override
   Widget build(BuildContext context) {
+    UserDataRepository _userDataRepository =
+        RepositoryProvider.of<UserDataRepository>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Relative List'),
@@ -28,13 +28,21 @@ class _PatientShareAccountScreenState extends State<PatientShareAccountScreen> {
       body: Column(
         children: <Widget>[
           Expanded(
-            flex: 3,
-            child: ShowRelativeListTile(),
+            child: ShowRelativeListTile(
+              userDataRepository: _userDataRepository,
+            ),
           ),
-          Expanded(
-            flex: 1,
-            child: QrCodeGenerator(),
+
+          FloatingActionButton(
+            onPressed: () async {
+              await _userDataRepository.addRelative(
+                  relativeEmail: "relativeaccount@gmail.com");
+            },
           )
+//          Expanded(
+//            flex: 1,
+//            child: QrCodeGenerator(),
+//          )
         ],
       ),
     );
@@ -44,10 +52,14 @@ class _PatientShareAccountScreenState extends State<PatientShareAccountScreen> {
 /// ListTile of Relatives
 
 class ShowRelativeListTile extends StatelessWidget {
+  final UserDataRepository userDataRepository;
+
+  ShowRelativeListTile({this.userDataRepository});
+
   @override
   Widget build(BuildContext context) {
     UserDataRepository _userDataRepository =
-    RepositoryProvider.of<UserDataRepository>(context);
+        RepositoryProvider.of<UserDataRepository>(context);
     return StreamBuilder(
       stream: _userDataRepository.getPatient,
       builder: (context, snapshot) {
@@ -63,17 +75,21 @@ class ShowRelativeListTile extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10)),
                       child: ListTile(
                         leading:
-                        MyCircleAvatar(index: index, snapshot: snapshot),
+                            MyCircleAvatar(index: index, snapshot: snapshot),
                         title: Text(
-                          snapshot.data.name,
+                          snapshot.data.relatives[index].name,
                         ),
                         trailing: IconButton(
                           icon: FaIcon(
                             FontAwesomeIcons.userAltSlash,
                           ),
-                          onPressed: () {
+                          onPressed: () async {
                             // TODO: Delete Relative From FireStore
+                            await _userDataRepository.deleteRelative(
+                                relativeEmail:
+                                    snapshot.data.relatives[index].email);
                           },
+                          tooltip: "Delete Relative",
                         ),
                       ),
                     );
@@ -84,15 +100,15 @@ class ShowRelativeListTile extends StatelessWidget {
               return Container(
                 child: Center(
                     child: Text(
-                      'No Relative Founded',
-                      style: TextStyle(fontSize: 24),
-                    )),
+                  'No Relative Founded',
+                  style: TextStyle(fontSize: 24),
+                )),
               );
             }
           }
         }
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return Container();
         }
         return Container(
           child: Center(
@@ -119,7 +135,9 @@ class MyCircleAvatar extends CircleAvatar {
     return CircleAvatar(
         maxRadius: 22,
         child: Container(
-          child: Text(_snapshot.data.name.substring(0, 1).toUpperCase()),
+          child: Text(_snapshot.data.relatives[_index].name
+              .substring(0, 1)
+              .toUpperCase()),
         ));
   }
 }
@@ -130,32 +148,23 @@ class QrCodeGenerator extends StatefulWidget {
 }
 
 class _QrCodeGeneratorState extends State<QrCodeGenerator> {
-  String uid;
-
-  UserRepository _userRepository;
-
-  Future<String> getUid() async {
-    uid = await _userRepository.getUserId();
-    return uid;
-  }
-
   @override
   void initState() {
-    _userRepository = RepositoryProvider.of<UserRepository>(context);
-    getUid();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    UserDataRepository userDataRepository =
+        RepositoryProvider.of<UserDataRepository>(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         FutureBuilder(
-          future: getUid(),
+          future: userDataRepository.getUserEmail(),
           builder: (context, snapshot) => QrImage(
             padding: EdgeInsets.all(20),
-            data: snapshot.data.toString() ?? "",
+            data: snapshot.data ?? "",
             size: 130.0,
           ),
         ),
