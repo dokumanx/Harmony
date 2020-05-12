@@ -5,7 +5,6 @@ import 'package:harmony/models/relative.dart';
 import 'package:harmony/models/user.dart';
 
 class Patient extends User {
-  // TODO: Change relatives list to actual Relative List
   final List<Relative> relatives;
 
   // TODO: Change todoList List to actual TodoList List
@@ -64,10 +63,12 @@ class Patient extends User {
 
   factory Patient.fromJson(Map<String, dynamic> parsedJson) {
     return Patient(
-      name: parsedJson["name"] ?? "",
-      email: parsedJson["email"] ?? "",
-      location: parsedJson["location"] ?? "",
-    );
+        name: parsedJson["name"] ?? "",
+        email: parsedJson["email"] ?? "",
+        userType: parsedJson["userType"] ?? "Unknown User Type"
+
+        /// location: parsedJson["location"] ?? "",
+        );
   }
 
   Map<String, dynamic> toJson() => {"name": this.name, "email": this.email};

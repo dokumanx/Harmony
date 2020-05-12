@@ -58,6 +58,9 @@ class Relative extends User {
     return Relative(
       name: parsedJson["name"] ?? "",
       email: parsedJson["email"] ?? "",
+      userType: parsedJson["userType"] == "Patient"
+          ? UserType.patient
+          : UserType.relative,
     );
   }
 

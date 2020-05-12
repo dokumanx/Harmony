@@ -12,7 +12,7 @@ import 'package:harmony/models/user_notification.dart';
 
 class UserDataRepository {
   final CollectionReference usersCollection =
-  Firestore.instance.collection('users');
+      Firestore.instance.collection('users');
 
   String _userEmail;
 
@@ -22,17 +22,18 @@ class UserDataRepository {
     return _userEmail;
   }
 
-  Future<void> setRelativeData({List<Patient> patients,
-    int faceModel,
-    UserType userType,
-    String uid,
-    String name,
-    String email,
-    FileImage fileImage,
-    Gender gender,
-    DateTime birthday,
-    DateTime registrationDate,
-    UserNotification notification}) async {
+  Future<void> setRelativeData(
+      {List<Patient> patients,
+      int faceModel,
+      UserType userType,
+      String uid,
+      String name,
+      String email,
+      FileImage fileImage,
+      Gender gender,
+      DateTime birthday,
+      DateTime registrationDate,
+      UserNotification notification}) async {
     await getUserEmail();
     return await usersCollection.document(_userEmail).setData({
       "patients": patients ?? [],
@@ -49,18 +50,19 @@ class UserDataRepository {
     });
   }
 
-  Future<void> setPatientData({List<Relative> relatives,
-    List<TodoList> todoList,
-    UserType userType,
-    Location location,
-    String uid,
-    String name,
-    String email,
-    FileImage fileImage,
-    Gender gender,
-    DateTime birthday,
-    DateTime registrationDate,
-    UserNotification notification}) async {
+  Future<void> setPatientData(
+      {List<Relative> relatives,
+      List<TodoList> todoList,
+      UserType userType,
+      Location location,
+      String uid,
+      String name,
+      String email,
+      FileImage fileImage,
+      Gender gender,
+      DateTime birthday,
+      DateTime registrationDate,
+      UserNotification notification}) async {
     await getUserEmail();
     return await usersCollection.document(_userEmail).setData({
       "relatives": relatives ?? [],
@@ -101,10 +103,11 @@ class UserDataRepository {
         .map(_patientDataFromSnaphot);
   }
 
+  /// [Relative] CRUD operation
   Future<void> deleteRelative({String relativeEmail}) async {
     try {
       RelativeList relativeList =
-      await usersCollection.document(_userEmail).get().then((user) {
+          await usersCollection.document(_userEmail).get().then((user) {
         /// 1) Get user [relatives] List
         final jsonResponse = jsonDecode(user["relatives"].toString());
 
@@ -118,7 +121,7 @@ class UserDataRepository {
 
       /// 3) Encode object to String
       List<Map<String, dynamic>> response =
-      relativeList.relatives.map((relative) => relative.toJson()).toList();
+          relativeList.relatives.map((relative) => relative.toJson()).toList();
 
       String encodedJson = jsonEncode(response);
 
@@ -136,11 +139,11 @@ class UserDataRepository {
       String relativeName;
 
       DocumentSnapshot documentSnapshot =
-      await usersCollection.document(_userEmail).get();
+          await usersCollection.document(_userEmail).get();
 
       /// 1) Get user [relatives] List
       final jsonResponse =
-      jsonDecode(documentSnapshot.data["relatives"].toString());
+          jsonDecode(documentSnapshot.data["relatives"].toString());
 
       RelativeList relativeList = RelativeList.fromJson(jsonResponse);
 
@@ -149,7 +152,7 @@ class UserDataRepository {
       /// Is it a valid user?
       try {
         DocumentSnapshot relativeSnapshot =
-        await usersCollection.document(relativeEmail).get();
+            await usersCollection.document(relativeEmail).get();
 
         if (relativeSnapshot.data['userType'] == 'Relative' ?? false) {
           relativeName = relativeSnapshot.data['name'];
@@ -189,7 +192,101 @@ class UserDataRepository {
           await usersCollection.document(_userEmail).updateData({
             "relatives": encodedJson,
           });
+        }
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
 
+  /// [Patient] CRUD operation
+  Future<void> deletePatient({String patientEmail}) async {
+    try {
+      PatientList patientList =
+          await usersCollection.document(_userEmail).get().then((user) {
+        /// 1) Get user [PatientList]
+        final jsonResponse = jsonDecode(user["patients"].toString());
+
+        PatientList patientList = PatientList.fromJson(jsonResponse);
+
+        /// 2) Find patient with its email and delete
+        patientList.patients
+            .removeWhere((element) => element.email == patientEmail);
+        return patientList;
+      });
+
+      /// 3) Encode object to String
+      List<Map<String, dynamic>> response =
+          patientList.patients.map((patient) => patient.toJson()).toList();
+
+      String encodedJson = jsonEncode(response);
+
+      /// 4) Send it to FireStore
+      await usersCollection.document(_userEmail).updateData({
+        "patients": encodedJson,
+      });
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  Future<void> addPatient({String patientEmail}) async {
+    try {
+      String patientName;
+
+      DocumentSnapshot documentSnapshot =
+          await usersCollection.document(_userEmail).get();
+
+      /// 1) Get user [PatientList]
+      final jsonResponse =
+          jsonDecode(documentSnapshot.data["patients"].toString());
+
+      PatientList patientList = PatientList.fromJson(jsonResponse);
+
+      bool isValidUser;
+
+      /// Is it a valid user?
+      try {
+        DocumentSnapshot patientSnapshot =
+            await usersCollection.document(patientEmail).get();
+
+        if (patientSnapshot.data['userType'] == 'Patient' ?? false) {
+          patientName = patientSnapshot.data['name'];
+          isValidUser = true;
+        } else {
+          isValidUser = false;
+        }
+      } catch (e) {
+        isValidUser = false;
+      }
+
+      if (isValidUser) {
+        /// Check that if relative is already exist or not
+        bool isPatientSame = false;
+        if (patientList.patients.length != 0) {
+          for (Patient patient in patientList.patients) {
+            if (patient.email == patientEmail) {
+              isPatientSame = true;
+            } else {
+              isPatientSame = false;
+            }
+          }
+        }
+        if (!isPatientSame) {
+          /// Add relative to the list
+          patientList.patients
+              .add(Patient(email: patientEmail, name: patientName));
+
+          /// 3) Encode object to String
+          List<Map<String, dynamic>> response =
+              patientList.patients.map((patient) => patient.toJson()).toList();
+
+          String encodedJson = jsonEncode(response);
+
+          /// 4) Send it to FireStore
+          await usersCollection.document(_userEmail).updateData({
+            "patients": encodedJson,
+          });
         }
       }
     } catch (e) {
@@ -200,7 +297,7 @@ class UserDataRepository {
   Future<String> getUserType() async {
     await getUserEmail();
     DocumentSnapshot userData =
-    await usersCollection.document(_userEmail).get();
+        await usersCollection.document(_userEmail).get();
     return userData.data['userType'];
   }
 }

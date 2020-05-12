@@ -25,11 +25,13 @@ dependencies:
   cupertino_icons: ^0.1.2
   flutter_spinkit: ^4.1.2
 
+
+  #Firebase
   firebase_auth: ^0.15.5+3
   cloud_firestore: ^0.13.4+2
   google_sign_in: ^4.0.0
 
-
+  #BLoC
   flutter_bloc: ^3.2.0
   provider: ^4.0.4
   equatable: ^1.0.0
@@ -38,6 +40,7 @@ dependencies:
   #For Desing (UI, Icons, Fonts)
   font_awesome_flutter: ^8.4.0
   google_fonts: ^1.1.0
+
   #For Location
   google_maps_flutter: ^0.5.25+2
   geolocator: ^5.3.0
@@ -46,6 +49,8 @@ dependencies:
   #For QR
   qr_flutter: ^3.2.0
   image_picker: ^0.6.4
+  flutter_barcode_scanner: ^1.0.0
+
 
 
 dev_dependencies:

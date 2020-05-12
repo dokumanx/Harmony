@@ -33,18 +33,11 @@ class MainBlocs extends StatelessWidget {
   Widget build(BuildContext context) {
     final UserRepository userRepository =
         RepositoryProvider.of<UserRepository>(context);
-
     return MultiBlocProvider(providers: [
-      BlocProvider(
+      BlocProvider<AuthenticationBloc>(
           create: (context) =>
               AuthenticationBloc(userRepository: userRepository)
                 ..add(AppStarted())),
-
-//        BlocProvider(
-//            create: (context) => LocationBloc()
-//              ..add(
-//                LocationGetStarted(),
-//              )),
     ], child: MyApp());
   }
 }
@@ -55,10 +48,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(
           textTheme: GoogleFonts.montserratTextTheme(
-            Theme
-                .of(context)
-                .textTheme,
-          )),
+        Theme.of(context).textTheme,
+      )),
       debugShowCheckedModeBanner: false,
       home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
         builder: (context, state) {

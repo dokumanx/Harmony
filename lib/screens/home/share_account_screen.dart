@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:harmony/blocs/sharing_account_bloc/bloc.dart';
 import 'package:harmony/repository/user_data_repository.dart';
 import 'package:harmony/screens/home/patient_share_account_screen.dart';
 import 'package:harmony/screens/home/releative_share_account_screen.dart';
@@ -13,7 +14,11 @@ class ShareAccountScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return RepositoryProvider(
       create: (context) => UserDataRepository(),
-      child: ReturnProperUser(),
+      child: BlocProvider(
+          create: (context) => SharingAccountBloc(
+              userDataRepository:
+                  RepositoryProvider.of<UserDataRepository>(context)),
+          child: ReturnProperUser()),
     );
   }
 }
@@ -27,7 +32,7 @@ class _ReturnProperUserState extends State<ReturnProperUser> {
   @override
   Widget build(BuildContext context) {
     UserDataRepository _userDataRepository =
-    RepositoryProvider.of<UserDataRepository>(context);
+        RepositoryProvider.of<UserDataRepository>(context);
 
     return FutureBuilder(
         future: _userDataRepository.getUserType(),
