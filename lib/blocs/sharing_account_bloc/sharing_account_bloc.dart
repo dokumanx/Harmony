@@ -47,7 +47,7 @@ class SharingAccountBloc
         await _userDataRepository.addRelative(relativeEmail: email);
         yield SharingAccountSuccessState(email: email);
       } catch (e) {
-        yield SharingAccountFailureState();
+        yield SharingAccountFailureState(error: e.toString());
         print(e.toString());
       }
     } else if (userType == UserType.patient) {

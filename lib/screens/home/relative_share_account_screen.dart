@@ -6,13 +6,14 @@ import 'package:harmony/blocs/sharing_account_bloc/bloc.dart';
 import 'package:harmony/models/user.dart';
 import 'package:harmony/repository/user_data_repository.dart';
 
-class PatientShareAccountScreen extends StatefulWidget {
+class RelativeShareAccountScreen extends StatefulWidget {
   @override
-  _PatientShareAccountScreenState createState() =>
-      _PatientShareAccountScreenState();
+  _RelativeShareAccountScreenState createState() =>
+      _RelativeShareAccountScreenState();
 }
 
-class _PatientShareAccountScreenState extends State<PatientShareAccountScreen> {
+class _RelativeShareAccountScreenState
+    extends State<RelativeShareAccountScreen> {
   @override
   void initState() {
     super.initState();
@@ -31,16 +32,16 @@ class _PatientShareAccountScreenState extends State<PatientShareAccountScreen> {
             (value) => value.substring(18),
           );
           BlocProvider.of<SharingAccountBloc>(context).add(
-              SharingAccountAdded(email: email, userType: UserType.relative));
+              SharingAccountAdded(email: email, userType: UserType.patient));
         },
       ),
       appBar: AppBar(
-        title: Text('Relative List'),
+        title: Text('Patient List'),
       ),
       body: Column(
         children: <Widget>[
           Expanded(
-            child: ShowRelativeListTile(),
+            child: ShowPatientListTile(),
           ),
         ],
       ),
@@ -50,7 +51,7 @@ class _PatientShareAccountScreenState extends State<PatientShareAccountScreen> {
 
 /// ListTile of Relatives
 
-class ShowRelativeListTile extends StatelessWidget {
+class ShowPatientListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     UserDataRepository _userDataRepository =
@@ -76,14 +77,14 @@ class ShowRelativeListTile extends StatelessWidget {
       },
       builder: (context, state) {
         return StreamBuilder(
-          stream: _userDataRepository.getPatient,
+          stream: _userDataRepository.getRelative,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.active) {
               if (snapshot.hasData) {
-                if (snapshot.data.relatives.length != 0) {
+                if (snapshot.data.patients.length != 0) {
                   return Container(
                     child: ListView.builder(
-                      itemCount: snapshot.data.relatives.length,
+                      itemCount: snapshot.data.patients.length,
                       itemBuilder: (context, index) {
                         return Card(
                           shape: RoundedRectangleBorder(
@@ -92,7 +93,7 @@ class ShowRelativeListTile extends StatelessWidget {
                             leading: MyCircleAvatar(
                                 index: index, snapshot: snapshot),
                             title: Text(
-                              snapshot.data.relatives[index].name,
+                              snapshot.data.patients[index].name,
                             ),
                             trailing: IconButton(
                               icon: FaIcon(
@@ -100,11 +101,11 @@ class ShowRelativeListTile extends StatelessWidget {
                               ),
                               onPressed: () async {
                                 _sharingAccountBloc.add(SharingAccountDeleted(
-                                  email: snapshot.data.relatives[index].email,
-                                  userType: UserType.relative,
+                                  email: snapshot.data.patients[index].email,
+                                  userType: UserType.patient,
                                 ));
                               },
-                              tooltip: "Delete Relative",
+                              tooltip: "Delete Patient",
                             ),
                           ),
                         );
@@ -115,7 +116,7 @@ class ShowRelativeListTile extends StatelessWidget {
                   return Container(
                     child: Center(
                         child: Text(
-                      'No Relative Founded',
+                      'No Patient Founded',
                       style: TextStyle(fontSize: 24),
                     )),
                   );
@@ -152,7 +153,7 @@ class MyCircleAvatar extends CircleAvatar {
     return CircleAvatar(
         maxRadius: 22,
         child: Container(
-          child: Text(_snapshot.data.relatives[_index].name
+          child: Text(_snapshot.data.patients[_index].name
               .substring(0, 1)
               .toUpperCase()),
         ));

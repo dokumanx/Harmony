@@ -24,6 +24,9 @@ class SharingAccountInProgressState extends SharingAccountState {
 }
 
 class SharingAccountFailureState extends SharingAccountState {
+  final String error;
+
+  SharingAccountFailureState({this.error});
   @override
-  List<Object> get props => [];
+  List<Object> get props => [error];
 }

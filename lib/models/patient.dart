@@ -63,12 +63,14 @@ class Patient extends User {
 
   factory Patient.fromJson(Map<String, dynamic> parsedJson) {
     return Patient(
-        name: parsedJson["name"] ?? "",
-        email: parsedJson["email"] ?? "",
-        userType: parsedJson["userType"] ?? "Unknown User Type"
+      name: parsedJson["name"] ?? "",
+      email: parsedJson["email"] ?? "",
+      userType: parsedJson["userType"] == "Patient"
+          ? UserType.patient
+          : UserType.relative,
 
-        /// location: parsedJson["location"] ?? "",
-        );
+      /// location: parsedJson["location"] ?? "",
+    );
   }
 
   Map<String, dynamic> toJson() => {"name": this.name, "email": this.email};

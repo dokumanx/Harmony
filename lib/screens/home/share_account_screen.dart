@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:harmony/blocs/sharing_account_bloc/bloc.dart';
 import 'package:harmony/repository/user_data_repository.dart';
 import 'package:harmony/screens/home/patient_share_account_screen.dart';
-import 'package:harmony/screens/home/releative_share_account_screen.dart';
+import 'package:harmony/screens/home/relative_share_account_screen.dart';
 
 class ShareAccountScreen extends StatelessWidget {
   @override
