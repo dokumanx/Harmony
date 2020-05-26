@@ -1,7 +1,3 @@
-//TODO: This file will hold to screen. One for [Patient] and one for [Relative].
-//TODO: [Relative] screen will see and add [Patient] button and list of all [Patient]s. Add button trigger camera and take a picture of QR code.
-//TODO: [Patient] screen will display a QR code and [Relative] list.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:harmony/blocs/sharing_account_bloc/bloc.dart';

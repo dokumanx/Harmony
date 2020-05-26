@@ -1,24 +1,23 @@
-//import 'package:equatable/equatable.dart';
-//import 'package:google_maps_flutter/google_maps_flutter.dart';
-//
-//abstract class LocationState extends Equatable {
-//
-//  const LocationState();
-//
-//  @override
-//  List<Object> get props => [];
-//
-//}
-//
-//class LocationGetSuccess extends LocationState {
-//
-//  final LatLng saveUserCurrentLocation;
-//
-//  LocationGetSuccess({this.saveUserCurrentLocation});
-//
-//  @override
-//  List<Object> get props => [saveUserCurrentLocation];
-//
-//
-//}
-//
+import 'package:equatable/equatable.dart';
+
+abstract class LocationState extends Equatable {}
+
+class InitialLocationState extends LocationState {
+  @override
+  List<Object> get props => null;
+}
+
+class LocationStateLoading extends LocationState {
+  @override
+  List<Object> get props => null;
+}
+
+class LocationStateSuccess extends LocationState {
+  @override
+  List<Object> get props => null;
+}
+
+class LocationStateFailure extends LocationState {
+  @override
+  List<Object> get props => null;
+}

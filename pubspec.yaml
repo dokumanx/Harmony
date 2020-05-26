@@ -14,7 +14,7 @@ description: A new Flutter application.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -42,9 +42,10 @@ dependencies:
   google_fonts: ^1.1.0
 
   #For Location
-  google_maps_flutter: ^0.5.25+2
-  geolocator: ^5.3.0
-  location: ^3.0.0
+  google_maps_flutter: ^0.5.27+3
+  location: ^3.0.2
+  geoflutterfire: ^2.1.0
+  geolocator: ^5.3.1
 
   #For QR
   qr_flutter: ^3.2.0

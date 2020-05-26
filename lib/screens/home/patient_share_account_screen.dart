@@ -103,6 +103,9 @@ class ShowRelativeListTile extends StatelessWidget {
                                   email: snapshot.data.relatives[index].email,
                                   userType: UserType.relative,
                                 ));
+
+                                print(snapshot
+                                    .data.relatives[index].userLocation);
                               },
                               tooltip: "Delete Relative",
                             ),

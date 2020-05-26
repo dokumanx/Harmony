@@ -1,6 +1,9 @@
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 enum UserType { patient, relative }
 
 class User {
+  final LatLng userLocation;
   final UserType userType;
   final String uid;
   final String name;
@@ -14,7 +17,8 @@ class User {
   final String notification;
   final DateTime birthday;
   User(
-      {this.userType,
+      {this.userLocation,
+      this.userType,
       this.uid,
       this.name,
       this.email,

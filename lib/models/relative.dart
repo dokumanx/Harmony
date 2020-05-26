@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:harmony/models/patient.dart';
 import 'package:harmony/models/user.dart';
 
@@ -12,6 +13,7 @@ class Relative extends User {
       {this.patients,
       this.faceModel,
       UserType userType,
+      LatLng userLocation,
       String uid,
       String name,
       String email,
@@ -22,6 +24,7 @@ class Relative extends User {
       DateTime registrationDate,
       String notification})
       : super(
+            userLocation: userLocation,
             userType: userType,
             uid: uid,
             name: name,
@@ -37,12 +40,19 @@ class Relative extends User {
 
     PatientList patientList = PatientList.fromJson(jsonResponse);
 
+    List<double> toLatLng = snapshot.data["userLocation"]
+        .toString()
+        .split(',')
+        .map((e) => double.parse(e))
+        .toList();
+
     return Relative(
       patients: patientList.patients,
       faceModel: snapshot.data["faceModel"] ?? 0,
       userType: snapshot.data["userType"] == 'Patient'
           ? UserType.patient
           : UserType.relative,
+      userLocation: LatLng(toLatLng[0], toLatLng[1]) ?? LatLng(1, 1),
       uid: snapshot.data["uid"],
       name: snapshot.data["name"],
       email: snapshot.data["email"],
@@ -55,16 +65,24 @@ class Relative extends User {
   }
 
   factory Relative.fromJson(Map<String, dynamic> parsedJson) {
+    List<double> toLatLng = parsedJson["userLocation"]
+        .toString()
+        .split(',')
+        .map((e) => double.parse(e))
+        .toList();
     return Relative(
       name: parsedJson["name"] ?? "",
       email: parsedJson["email"] ?? "",
-      userType: parsedJson["userType"] == "Patient"
-          ? UserType.patient
-          : UserType.relative,
+      userLocation: LatLng(toLatLng[0], toLatLng[1]) ?? LatLng(1, 1),
     );
   }
 
-  Map<String, dynamic> toJson() => {"name": this.name, "email": this.email};
+  Map<String, dynamic> toJson() => {
+        "name": this.name,
+        "email": this.email,
+        "userLocation":
+            "${this.userLocation.latitude},${this.userLocation.longitude}",
+      };
 }
 
 class RelativeList {

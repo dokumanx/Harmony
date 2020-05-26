@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:harmony/models/relative.dart';
 import 'package:harmony/models/user.dart';
 
@@ -10,13 +11,10 @@ class Patient extends User {
   // TODO: Change todoList List to actual TodoList List
   final List<String> todoList;
 
-  // TODO: Change location to actual Location
-  final String location;
-
   Patient(
       {this.relatives,
       this.todoList,
-      this.location,
+      LatLng userLocation,
       UserType userType,
       String uid,
       String name,
@@ -28,6 +26,7 @@ class Patient extends User {
       DateTime registrationDate,
       String notification})
       : super(
+            userLocation: userLocation,
             userType: userType,
             uid: uid,
             name: name,
@@ -43,10 +42,15 @@ class Patient extends User {
 
     RelativeList relativeList = RelativeList.fromJson(jsonResponse);
 
+    List<double> toLatLng = snapshot.data["userLocation"]
+        .toString()
+        .split(',')
+        .map((e) => double.parse(e))
+        .toList();
     return Patient(
       relatives: relativeList.relatives,
       todoList: List<String>.from(snapshot.data["todoList"]),
-      location: snapshot.data["location"],
+      userLocation: LatLng(toLatLng[0], toLatLng[1]) ?? LatLng(1, 1),
       userType: snapshot.data["userType"] == 'Patient'
           ? UserType.patient
           : UserType.relative,
@@ -62,18 +66,25 @@ class Patient extends User {
   }
 
   factory Patient.fromJson(Map<String, dynamic> parsedJson) {
+    List<double> toLatLng = parsedJson["userLocation"]
+        .toString()
+        .split(',')
+        .map((e) => double.parse(e))
+        .toList();
+
     return Patient(
       name: parsedJson["name"] ?? "",
       email: parsedJson["email"] ?? "",
-      userType: parsedJson["userType"] == "Patient"
-          ? UserType.patient
-          : UserType.relative,
-
-      /// location: parsedJson["location"] ?? "",
+      userLocation: LatLng(toLatLng[0], toLatLng[1]) ?? LatLng(1, 1),
     );
   }
 
-  Map<String, dynamic> toJson() => {"name": this.name, "email": this.email};
+  Map<String, dynamic> toJson() => {
+        "name": this.name,
+        "email": this.email,
+        "userLocation":
+            "${this.userLocation.latitude},${this.userLocation.longitude}",
+      };
 }
 
 class PatientList {

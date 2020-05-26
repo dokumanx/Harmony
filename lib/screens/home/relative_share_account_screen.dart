@@ -128,7 +128,8 @@ class ShowPatientListTile extends StatelessWidget {
             }
             return Container(
               child: Center(
-                child: Text('An error occured. Please try again.'),
+                child: Text(
+                    'An error occured. Please try again. ${snapshot.error}'),
               ),
             );
           },

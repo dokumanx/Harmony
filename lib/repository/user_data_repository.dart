@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:harmony/models/location.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:harmony/models/patient.dart';
 import 'package:harmony/models/relative.dart';
 import 'package:harmony/models/todo_list.dart';
@@ -25,6 +25,7 @@ class UserDataRepository {
   Future<void> setRelativeData(
       {List<Patient> patients,
       int faceModel,
+      LatLng userLocation,
       UserType userType,
       String uid,
       String name,
@@ -37,6 +38,10 @@ class UserDataRepository {
     await getUserEmail();
     return await usersCollection.document(_userEmail).setData({
       "patients": patients ?? [],
+      // encode it to String with .toJson factory method.
+      "userLocation": userLocation != null
+          ? "${userLocation?.latitude},${userLocation?.longitude}"
+          : "1,1",
       "faceModel": faceModel ?? 0,
       "userType": userType == UserType.patient ? "Patient" : "Relative",
       "uid": uid,
@@ -54,7 +59,7 @@ class UserDataRepository {
       {List<Relative> relatives,
       List<TodoList> todoList,
       UserType userType,
-      Location location,
+      LatLng userLocation,
       String uid,
       String name,
       String email,
@@ -67,7 +72,9 @@ class UserDataRepository {
     return await usersCollection.document(_userEmail).setData({
       "relatives": relatives ?? [],
       "todoList": todoList ?? [],
-      "location": location ?? "Not available",
+      "userLocation": userLocation != null
+          ? "${userLocation?.latitude},${userLocation?.longitude}"
+          : "1,1",
       "userType": userType == UserType.patient ? "Patient" : "Relative",
       "uid": uid,
       "name": name ?? email,
@@ -84,7 +91,6 @@ class UserDataRepository {
     return Relative.relativeFromDocumentSnapshot(snapshot);
   }
 
-// TODO: Patient için yaptıklarının aynısını yap.
   Stream<Relative> get getRelative {
     return usersCollection
         .document(_userEmail)
@@ -167,6 +173,8 @@ class UserDataRepository {
       String relativeName;
       String patientName;
 
+      String relativeLocation;
+      String patientLocation;
       DocumentSnapshot documentSnapshot =
           await usersCollection.document(_userEmail).get();
 
@@ -183,8 +191,11 @@ class UserDataRepository {
         DocumentSnapshot relativeSnapshot =
             await usersCollection.document(relativeEmail).get();
         patientName = documentSnapshot.data["name"].toString();
+        patientLocation = documentSnapshot.data["userLocation"].toString();
         if (relativeSnapshot.data['userType'] == 'Relative' ?? false) {
           relativeName = relativeSnapshot.data['name'];
+          relativeLocation = relativeSnapshot.data['userLocation'];
+
           isValidUser = true;
         } else {
           isValidUser = false;
@@ -201,7 +212,6 @@ class UserDataRepository {
           for (Relative relative in relativeList.relatives) {
             if (relative.email == relativeEmail) {
               isRelativeSame = true;
-              throw Exception("User is already exist.");
             } else {
               isRelativeSame = false;
             }
@@ -210,13 +220,27 @@ class UserDataRepository {
 
         if (!isRelativeSame) {
           /// Add relative to the list
-          relativeList.relatives
-              .add(Relative(email: relativeEmail, name: relativeName));
+
+          List<double> toLatLngRelative =
+              relativeLocation.split(',').map((e) => double.parse(e)).toList();
+
+          List<double> toLatLngPatient =
+              patientLocation.split(',').map((e) => double.parse(e)).toList();
+
+          relativeList.relatives.add(Relative(
+            email: relativeEmail,
+            name: relativeName,
+            userLocation: LatLng(toLatLngRelative[0], toLatLngRelative[1]),
+          ));
 
           PatientList patientList =
               await getPatientList(relativeEmail: relativeEmail);
-          patientList.patients
-              .add(Patient(email: _userEmail, name: patientName));
+
+          patientList.patients.add(Patient(
+            email: _userEmail,
+            name: patientName,
+            userLocation: LatLng(toLatLngPatient[0], toLatLngPatient[1]),
+          ));
 
           /// 3) Encode object to String
           List<Map<String, dynamic>> responseRelative = relativeList.relatives
@@ -308,6 +332,9 @@ class UserDataRepository {
       String patientName;
       String relativeName;
 
+      String patientLocation;
+      String relativeLocation;
+
       DocumentSnapshot documentSnapshot =
           await usersCollection.document(_userEmail).get();
 
@@ -324,9 +351,12 @@ class UserDataRepository {
         DocumentSnapshot patientSnapshot =
             await usersCollection.document(patientEmail).get();
         relativeName = documentSnapshot.data["name"].toString();
+        relativeLocation = documentSnapshot.data["userLocation"].toString();
 
         if (patientSnapshot.data['userType'] == 'Patient' ?? false) {
           patientName = patientSnapshot.data['name'];
+          patientLocation = patientSnapshot.data['userLocation'];
+
           isValidUser = true;
         } else {
           isValidUser = false;
@@ -349,14 +379,27 @@ class UserDataRepository {
         }
         if (!isPatientSame) {
           /// Add relative and patients to the list
-          patientList.patients
-              .add(Patient(email: patientEmail, name: patientName));
+
+          List<double> toLatLngRelative =
+              relativeLocation.split(',').map((e) => double.parse(e)).toList();
+
+          List<double> toLatLngPatient =
+              patientLocation.split(',').map((e) => double.parse(e)).toList();
+
+          patientList.patients.add(Patient(
+            email: patientEmail,
+            name: patientName,
+            userLocation: LatLng(toLatLngPatient[0], toLatLngPatient[1]),
+          ));
 
           RelativeList relativeList =
               await getRelativeList(patientEmail: patientEmail);
 
-          relativeList.relatives
-              .add(Relative(email: _userEmail, name: relativeName));
+          relativeList.relatives.add(Relative(
+            email: _userEmail,
+            name: relativeName,
+            userLocation: LatLng(toLatLngRelative[0], toLatLngRelative[1]),
+          ));
 
           /// 3) Encode object to String
           List<Map<String, dynamic>> responsePatient =
