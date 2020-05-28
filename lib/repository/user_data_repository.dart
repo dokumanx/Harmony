@@ -40,8 +40,8 @@ class UserDataRepository {
       "patients": patients ?? [],
       // encode it to String with .toJson factory method.
       "userLocation": userLocation != null
-          ? "${userLocation?.latitude},${userLocation?.longitude}"
-          : "1,1",
+          ? [userLocation.latitude, userLocation.longitude]
+          : [1, 1],
       "faceModel": faceModel ?? 0,
       "userType": userType == UserType.patient ? "Patient" : "Relative",
       "uid": uid,
@@ -73,8 +73,8 @@ class UserDataRepository {
       "relatives": relatives ?? [],
       "todoList": todoList ?? [],
       "userLocation": userLocation != null
-          ? "${userLocation?.latitude},${userLocation?.longitude}"
-          : "1,1",
+          ? [userLocation.latitude, userLocation.longitude]
+          : [1, 1],
       "userType": userType == UserType.patient ? "Patient" : "Relative",
       "uid": uid,
       "name": name ?? email,
@@ -173,8 +173,8 @@ class UserDataRepository {
       String relativeName;
       String patientName;
 
-      String relativeLocation;
-      String patientLocation;
+      List<double> relativeLocation;
+      List<double> patientLocation;
       DocumentSnapshot documentSnapshot =
           await usersCollection.document(_userEmail).get();
 
@@ -191,10 +191,16 @@ class UserDataRepository {
         DocumentSnapshot relativeSnapshot =
             await usersCollection.document(relativeEmail).get();
         patientName = documentSnapshot.data["name"].toString();
-        patientLocation = documentSnapshot.data["userLocation"].toString();
+        patientLocation = List<double>.from(documentSnapshot
+            .data["userLocation"]
+            .map((e) => e.toDouble())
+            .toList());
         if (relativeSnapshot.data['userType'] == 'Relative' ?? false) {
           relativeName = relativeSnapshot.data['name'];
-          relativeLocation = relativeSnapshot.data['userLocation'];
+          relativeLocation = List<double>.from(relativeSnapshot
+              .data['userLocation']
+              .map((e) => e.toDouble())
+              .toList());
 
           isValidUser = true;
         } else {
@@ -221,16 +227,10 @@ class UserDataRepository {
         if (!isRelativeSame) {
           /// Add relative to the list
 
-          List<double> toLatLngRelative =
-              relativeLocation.split(',').map((e) => double.parse(e)).toList();
-
-          List<double> toLatLngPatient =
-              patientLocation.split(',').map((e) => double.parse(e)).toList();
-
           relativeList.relatives.add(Relative(
             email: relativeEmail,
             name: relativeName,
-            userLocation: LatLng(toLatLngRelative[0], toLatLngRelative[1]),
+            userLocation: LatLng(relativeLocation[0], relativeLocation[1]),
           ));
 
           PatientList patientList =
@@ -239,7 +239,7 @@ class UserDataRepository {
           patientList.patients.add(Patient(
             email: _userEmail,
             name: patientName,
-            userLocation: LatLng(toLatLngPatient[0], toLatLngPatient[1]),
+            userLocation: LatLng(patientLocation[0], patientLocation[1]),
           ));
 
           /// 3) Encode object to String
@@ -332,8 +332,8 @@ class UserDataRepository {
       String patientName;
       String relativeName;
 
-      String patientLocation;
-      String relativeLocation;
+      List<double> patientLocation;
+      List<double> relativeLocation;
 
       DocumentSnapshot documentSnapshot =
           await usersCollection.document(_userEmail).get();
@@ -351,11 +351,17 @@ class UserDataRepository {
         DocumentSnapshot patientSnapshot =
             await usersCollection.document(patientEmail).get();
         relativeName = documentSnapshot.data["name"].toString();
-        relativeLocation = documentSnapshot.data["userLocation"].toString();
+        relativeLocation = List<double>.from(documentSnapshot
+            .data["userLocation"]
+            .map((e) => e.toDouble())
+            .toList());
 
         if (patientSnapshot.data['userType'] == 'Patient' ?? false) {
           patientName = patientSnapshot.data['name'];
-          patientLocation = patientSnapshot.data['userLocation'];
+          patientLocation = List<double>.from(patientSnapshot
+              .data['userLocation']
+              .map((e) => e.toDouble())
+              .toList());
 
           isValidUser = true;
         } else {
@@ -363,6 +369,7 @@ class UserDataRepository {
         }
       } catch (e) {
         isValidUser = false;
+        print("There is an error: " + e.toString());
       }
 
       if (isValidUser) {
@@ -380,16 +387,10 @@ class UserDataRepository {
         if (!isPatientSame) {
           /// Add relative and patients to the list
 
-          List<double> toLatLngRelative =
-              relativeLocation.split(',').map((e) => double.parse(e)).toList();
-
-          List<double> toLatLngPatient =
-              patientLocation.split(',').map((e) => double.parse(e)).toList();
-
           patientList.patients.add(Patient(
             email: patientEmail,
             name: patientName,
-            userLocation: LatLng(toLatLngPatient[0], toLatLngPatient[1]),
+            userLocation: LatLng(patientLocation[0], patientLocation[1]),
           ));
 
           RelativeList relativeList =
@@ -398,7 +399,7 @@ class UserDataRepository {
           relativeList.relatives.add(Relative(
             email: _userEmail,
             name: relativeName,
-            userLocation: LatLng(toLatLngRelative[0], toLatLngRelative[1]),
+            userLocation: LatLng(relativeLocation[0], relativeLocation[1]),
           ));
 
           /// 3) Encode object to String

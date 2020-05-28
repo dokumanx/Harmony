@@ -40,19 +40,15 @@ class Relative extends User {
 
     PatientList patientList = PatientList.fromJson(jsonResponse);
 
-    List<double> toLatLng = snapshot.data["userLocation"]
-        .toString()
-        .split(',')
-        .map((e) => double.parse(e))
-        .toList();
-
+    double latitude = snapshot["userLocation"][0].toDouble();
+    double longitude = snapshot["userLocation"][1].toDouble();
     return Relative(
       patients: patientList.patients,
       faceModel: snapshot.data["faceModel"] ?? 0,
       userType: snapshot.data["userType"] == 'Patient'
           ? UserType.patient
           : UserType.relative,
-      userLocation: LatLng(toLatLng[0], toLatLng[1]) ?? LatLng(1, 1),
+      userLocation: LatLng(latitude, longitude) ?? LatLng(1, 1),
       uid: snapshot.data["uid"],
       name: snapshot.data["name"],
       email: snapshot.data["email"],
@@ -65,23 +61,23 @@ class Relative extends User {
   }
 
   factory Relative.fromJson(Map<String, dynamic> parsedJson) {
-    List<double> toLatLng = parsedJson["userLocation"]
-        .toString()
-        .split(',')
-        .map((e) => double.parse(e))
-        .toList();
+    double latitude = parsedJson["userLocation"][0].toDouble();
+    double longitude = parsedJson["userLocation"][1].toDouble();
+
     return Relative(
       name: parsedJson["name"] ?? "",
       email: parsedJson["email"] ?? "",
-      userLocation: LatLng(toLatLng[0], toLatLng[1]) ?? LatLng(1, 1),
+      userLocation: LatLng(latitude, longitude) ?? LatLng(1, 1),
     );
   }
 
   Map<String, dynamic> toJson() => {
         "name": this.name,
         "email": this.email,
-        "userLocation":
-            "${this.userLocation.latitude},${this.userLocation.longitude}",
+        "userLocation": [
+          this.userLocation.latitude,
+          this.userLocation.longitude
+        ],
       };
 }
 

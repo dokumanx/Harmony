@@ -42,15 +42,12 @@ class Patient extends User {
 
     RelativeList relativeList = RelativeList.fromJson(jsonResponse);
 
-    List<double> toLatLng = snapshot.data["userLocation"]
-        .toString()
-        .split(',')
-        .map((e) => double.parse(e))
-        .toList();
+    double latitude = snapshot["userLocation"][0].toDouble();
+    double longitude = snapshot["userLocation"][1].toDouble();
     return Patient(
       relatives: relativeList.relatives,
       todoList: List<String>.from(snapshot.data["todoList"]),
-      userLocation: LatLng(toLatLng[0], toLatLng[1]) ?? LatLng(1, 1),
+      userLocation: LatLng(latitude, longitude) ?? LatLng(1, 1),
       userType: snapshot.data["userType"] == 'Patient'
           ? UserType.patient
           : UserType.relative,
@@ -66,24 +63,22 @@ class Patient extends User {
   }
 
   factory Patient.fromJson(Map<String, dynamic> parsedJson) {
-    List<double> toLatLng = parsedJson["userLocation"]
-        .toString()
-        .split(',')
-        .map((e) => double.parse(e))
-        .toList();
-
+    double latitude = parsedJson["userLocation"][0].toDouble();
+    double longitude = parsedJson["userLocation"][1].toDouble();
     return Patient(
       name: parsedJson["name"] ?? "",
       email: parsedJson["email"] ?? "",
-      userLocation: LatLng(toLatLng[0], toLatLng[1]) ?? LatLng(1, 1),
+      userLocation: LatLng(latitude, longitude) ?? LatLng(1, 1),
     );
   }
 
   Map<String, dynamic> toJson() => {
         "name": this.name,
         "email": this.email,
-        "userLocation":
-            "${this.userLocation.latitude},${this.userLocation.longitude}",
+        "userLocation": [
+          this.userLocation.latitude,
+          this.userLocation.longitude
+        ],
       };
 }
 

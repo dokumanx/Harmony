@@ -4,7 +4,6 @@ import 'package:harmony/blocs/authentication_bloc/bloc.dart';
 import "package:harmony/blocs/login_bloc/bloc.dart";
 
 import 'create_account_button.dart';
-import 'google_login_button.dart';
 import 'login_button.dart';
 
 class LoginForm extends StatefulWidget {
@@ -116,7 +115,6 @@ class _LoginFormState extends State<LoginForm> {
                               ? _onFormSubmitted
                               : null,
                         ),
-                        GoogleLoginButton(),
                         CreateAccountButton(),
                       ],
                     ),
