@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:harmony/screens/home/face_screen.dart';
 import 'package:harmony/screens/home/location_screen.dart';
 import 'package:harmony/screens/home/profile_screen.dart';
 import 'package:harmony/screens/home/share_account_screen.dart';
@@ -12,6 +13,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedItem = 0;
   static const List<BottomNavigationBarItem> _navigationBarItems = [
+    BottomNavigationBarItem(
+      title: Text('Faces'),
+      icon: Icon(Icons.face),
+    ),
     BottomNavigationBarItem(
       title: Text('Todo List'),
       icon: Icon(Icons.bookmark),
@@ -30,22 +35,25 @@ class _HomeScreenState extends State<HomeScreen> {
     ),
   ];
 
-  Widget _currentWidget = TodoScreen();
+  Widget _currentWidget = FaceScreen();
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedItem = index;
       switch (index) {
         case 0:
-          _currentWidget = TodoScreen();
+          _currentWidget = FaceScreen();
           break;
         case 1:
-          _currentWidget = LocationScreen();
+          _currentWidget = TodoScreen();
           break;
         case 2:
-          _currentWidget = ShareAccountScreen();
+          _currentWidget = LocationScreen();
           break;
         case 3:
+          _currentWidget = ShareAccountScreen();
+          break;
+        case 4:
           _currentWidget = ProfileScreen();
           break;
       }
