@@ -49,7 +49,7 @@ dependencies:
 
   #For QR
   qr_flutter: ^3.2.0
-  image_picker: ^0.6.4
+  image_picker: ^0.6.7
   flutter_barcode_scanner: ^1.0.0
 
 
