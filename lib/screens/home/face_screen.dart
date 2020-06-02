@@ -1,12 +1,14 @@
+import 'dart:async';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:http/http.dart' as http;
 import 'package:async/async.dart';
 import 'package:path/path.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:harmony/models/face_recognition.dart';
+
 
 class FaceScreen extends StatefulWidget {
   @override
@@ -60,7 +62,6 @@ class _FaceScreenState extends State<FaceScreen> {
         color: Colors.white,
         ),
         onPressed: getImage,
-
         ),
     );
   }
@@ -95,3 +96,4 @@ Future<FaceList> pushData(File image) async {
   return FaceList.fromJson(jsonify);
 
 }
+
