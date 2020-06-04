@@ -1,12 +1,9 @@
-//TODO : This screen will be our main screen in the app.
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:harmony/blocs/sharing_account_bloc/bloc.dart';
 import 'package:harmony/repository/user_data_repository.dart';
-
-
 
 class TodoScreen extends StatelessWidget {
   @override
@@ -76,18 +73,7 @@ class TodoScreenChild extends StatelessWidget {
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.active) {
               if (snapshot.hasData) {
-                assert(snapshot.data != null);
-                if (snapshot.data.todoList.length != 0) {
                   return TodoScreenLogic(data: snapshot.data.todoList);
-                } else {
-                  return Container(
-                    child: Center(
-                        child: Text(
-                          'No Relative Founded',
-                          style: TextStyle(fontSize: 24),
-                        )),
-                  );
-                }
               }
             }
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -108,6 +94,7 @@ class TodoScreenChild extends StatelessWidget {
 class TodoScreenLogic extends StatefulWidget {
   TodoScreenLogic({@required this.data});
 
+
   final List<String> data;
 
   @override
@@ -117,29 +104,22 @@ class TodoScreenLogic extends StatefulWidget {
 class _TodoScreenState extends State<TodoScreenLogic> {
   String todoTitle = "";
 
-  createTodos() {
-    DocumentReference documentReference =
-        Firestore.instance.collection("MyTodos").document(todoTitle);
+  createTodos(userEmail) async {
 
-    //Map
-    Map<String, String> todos = {"todoTitle": todoTitle};
 
-    documentReference.setData(todos).whenComplete(() {
-      print("$todoTitle created");
-    });
+    Firestore.instance.collection("users").document(userEmail)
+    .updateData({'todoList' : FieldValue.arrayUnion([todoTitle])});
   }
 
   deleteTodos(item) {
-    DocumentReference documentReference =
-        Firestore.instance.collection("MyTodos").document(item);
-
-    documentReference.delete().whenComplete(() {
-      print("$item deleted");
-    });
+    Firestore.instance.collection("users").document("patientaccount@gmail.com")
+        .updateData({"todoList": FieldValue.arrayRemove([item])});
   }
 
   @override
   Widget build(BuildContext context) {
+    var todo = this.widget.data;
+
     return Container(
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height,
@@ -163,9 +143,10 @@ class _TodoScreenState extends State<TodoScreenLogic> {
                     ),
                     actions: <Widget>[
                       FlatButton(
-                          onPressed: () {
-                            createTodos();
-
+                          onPressed: () async {
+                            var ur = UserDataRepository();
+                            var userEmail = await ur.getUserEmail();
+                            await createTodos(userEmail);
                             Navigator.of(context).pop();
                           },
                           child: Text("Add"))
@@ -178,60 +159,34 @@ class _TodoScreenState extends State<TodoScreenLogic> {
             color: Colors.white,
           ),
         ),
-        body: StreamBuilder(
-            stream: Firestore.instance.collection("MyTodos").snapshots(),
-            builder: (context, snapshots) {
-              if (widget.data.isNotEmpty) {
-                var todo = this.widget.data;
-                return ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: this.widget.data.length,
-                    itemBuilder: (context, index) {
-                      return Dismissible(
-                          onDismissed: (direction) {
-                            deleteTodos(todo[index]);
-                          },
-                          key: Key(todo[index]),
-                          child: Card(
-                            elevation: 4,
-                            margin: EdgeInsets.all(8),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8)),
-                            child: ListTile(
-                              title: Text(this.widget.data[index]),
-                              trailing: IconButton(
-                                  icon: Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
-                                  ),
-                                  onPressed: () {
-                                    // deleteTodos(documentSnapshot["todoTitle"]);
-                                    print("Let's say we deleted it.");
-                                  }),
-                            ),
-                          ));
-                    });
-              } else {
-                return Align(
-                  alignment: FractionalOffset.bottomCenter,
-                  child: CircularProgressIndicator(),
-                );
-              }
-            }),
+        body: ListView.builder(
+          shrinkWrap: true,
+          itemCount: this.widget.data.length,
+          itemBuilder: (context, index) {
+            return Dismissible(
+                onDismissed: (direction) {
+                  deleteTodos(todo[index]);
+                },
+                key: Key(todo[index]),
+                child: Card(
+                  elevation: 4,
+                  margin: EdgeInsets.all(8),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                  child: ListTile(
+                    title: Text(this.widget.data[index]),
+                    trailing: IconButton(
+                        icon: Icon(
+                          Icons.delete,
+                          color: Colors.red,
+                        ),
+                        onPressed: () {
+                          deleteTodos(todo[index]);
+                        }),
+                  ),
+                ));
+          }),
       ),
     );
   }
 }
-
-/*
-ListView.builder(
-itemCount: snapshot.data.todoList.length,
-itemBuilder: (context, index) {
-return Container(
-child: TodoScreenLogic(data: snapshot.data.todoList[index],),
-);
-},
-),
-);
-
- */
