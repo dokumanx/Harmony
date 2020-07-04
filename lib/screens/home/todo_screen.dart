@@ -1,8 +1,14 @@
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:harmony/blocs/sharing_account_bloc/bloc.dart';
 import 'package:harmony/repository/user_data_repository.dart';
+import 'package:intl/intl.dart';
+
+import '../../main.dart';
 //import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 class TodoScreen extends StatelessWidget {
@@ -99,9 +105,13 @@ class TodoScreenLogic extends StatefulWidget {
 }
 
 class _TodoScreenState extends State<TodoScreenLogic> {
+  final DateFormat _formatter = DateFormat('yyyy-MM-dd');
+
   String todoTitle = "";
   DateTime _selectedDate;
   TimeOfDay _selectedTime;
+  String _formattedDate;
+  String _formattedTime;
 
   @override
   void initState() {
@@ -134,7 +144,8 @@ class _TodoScreenState extends State<TodoScreenLogic> {
     if (picked != null && picked != _selectedDate)
       setState(() {
         _selectedDate = picked;
-        print(_selectedDate);
+        _formattedDate = _formatter.format(_selectedDate);
+        print(_formattedDate);
       });
   }
 
@@ -145,8 +156,50 @@ class _TodoScreenState extends State<TodoScreenLogic> {
     if (picked != null && picked != _selectedTime) {
       setState(() {
         _selectedTime = picked;
+        _formattedTime = "${_selectedTime.hour}"
+            ":"
+            "${_selectedTime.minute.toString().padLeft(2, '0')}";
+        print(_formattedTime);
       });
     }
+  }
+
+  Future<void> _scheduleNotification(int seconds) async {
+    var scheduledNotificationDateTime =
+        DateTime.now().add(Duration(seconds: seconds));
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+        'your channel id', 'your channel name', 'your channel description',
+        importance: Importance.Max, priority: Priority.High, ticker: 'ticker');
+    var iOSPlatformChannelSpecifics = IOSNotificationDetails();
+    var platformChannelSpecifics = NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.schedule(
+      0,
+      "TODO",
+      todoTitle,
+      scheduledNotificationDateTime,
+      platformChannelSpecifics,
+    );
+  }
+
+  void _dateTime(BuildContext context) async {
+    await _selectDate(context);
+    await _selectTime(context);
+
+    DateTime currentDate = DateTime.now();
+    TimeOfDay currentTime = TimeOfDay.now();
+    String formattedCurrentDate = _formatter.format(currentDate);
+    String formattedCurrentTime = "${currentTime.hour}"
+        ":"
+        "${currentTime.minute.toString().padLeft(2, '0')}";
+
+    String pickedDateTime = _formattedDate + " " + _formattedTime;
+    String currentDateTime = formattedCurrentDate + " " + formattedCurrentTime;
+    Duration timeDifference = DateTime.parse(pickedDateTime)
+        .difference(DateTime.parse(currentDateTime));
+
+    print(timeDifference.inSeconds);
+    _scheduleNotification(timeDifference.inSeconds);
   }
 
   @override
@@ -176,22 +229,19 @@ class _TodoScreenState extends State<TodoScreenLogic> {
                     ),
                     actions: <Widget>[
                       FlatButton(
-                        onPressed: () async {
-                          await _selectDate(context);
-                          await _selectTime(context);
-                          Navigator.of(context).pop();
-                        },
-                        child: Text("Date & Time"),
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: Text("Cancel"),
                       ),
                       FlatButton(
                         onPressed: () async {
                           var ur = UserDataRepository();
                           var userEmail = await ur.getUserEmail();
+                          await _dateTime(context);
                           await createTodos(userEmail);
                           Navigator.of(context).pop();
                         },
                         child: Text("Add"),
-                      )
+                      ),
                     ],
                   );
                 });
