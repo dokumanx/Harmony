@@ -1,11 +1,9 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:harmony/blocs/sharing_account_bloc/bloc.dart';
 import 'package:harmony/repository/user_data_repository.dart';
 //import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-
 
 class TodoScreen extends StatelessWidget {
   @override
@@ -15,7 +13,7 @@ class TodoScreen extends StatelessWidget {
       child: BlocProvider(
           create: (context) => SharingAccountBloc(
               userDataRepository:
-              RepositoryProvider.of<UserDataRepository>(context)),
+                  RepositoryProvider.of<UserDataRepository>(context)),
           child: ReturnProperUser()),
     );
   }
@@ -30,7 +28,7 @@ class _ReturnProperUserState extends State<ReturnProperUser> {
   @override
   Widget build(BuildContext context) {
     UserDataRepository _userDataRepository =
-    RepositoryProvider.of<UserDataRepository>(context);
+        RepositoryProvider.of<UserDataRepository>(context);
 
     return FutureBuilder(
         future: _userDataRepository.getUserType(),
@@ -45,17 +43,15 @@ class _ReturnProperUserState extends State<ReturnProperUser> {
   }
 }
 
-
-
 class TodoScreenChild extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     UserDataRepository _userDataRepository =
-    RepositoryProvider.of<UserDataRepository>(context);
+        RepositoryProvider.of<UserDataRepository>(context);
 
     // ignore: close_sinks
 
-    return  BlocConsumer<SharingAccountBloc, SharingAccountState>(
+    return BlocConsumer<SharingAccountBloc, SharingAccountState>(
       listener: (context, state) {
         if (state is SharingAccountInProgressState) {
           Scaffold.of(context)
@@ -75,7 +71,7 @@ class TodoScreenChild extends StatelessWidget {
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.active) {
               if (snapshot.hasData) {
-                  return TodoScreenLogic(data: snapshot.data.todoList);
+                return TodoScreenLogic(data: snapshot.data.todoList);
               }
             }
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -96,7 +92,6 @@ class TodoScreenChild extends StatelessWidget {
 class TodoScreenLogic extends StatefulWidget {
   TodoScreenLogic({@required this.data});
 
-
   final List<String> data;
 
   @override
@@ -105,17 +100,53 @@ class TodoScreenLogic extends StatefulWidget {
 
 class _TodoScreenState extends State<TodoScreenLogic> {
   String todoTitle = "";
+  DateTime _selectedDate;
+  TimeOfDay _selectedTime;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedDate = DateTime.now();
+  }
 
   createTodos(userEmail) async {
-
-
-    Firestore.instance.collection("users").document(userEmail)
-    .updateData({'todoList' : FieldValue.arrayUnion([todoTitle])});
+    Firestore.instance.collection("users").document(userEmail).updateData({
+      'todoList': FieldValue.arrayUnion([todoTitle])
+    });
   }
 
   deleteTodos(item) {
-    Firestore.instance.collection("users").document("patientaccount@gmail.com")
-        .updateData({"todoList": FieldValue.arrayRemove([item])});
+    Firestore.instance
+        .collection("users")
+        .document("patientaccount@gmail.com")
+        .updateData({
+      "todoList": FieldValue.arrayRemove([item])
+    });
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2030),
+    );
+    if (picked != null && picked != _selectedDate)
+      setState(() {
+        _selectedDate = picked;
+        print(_selectedDate);
+      });
+  }
+
+  Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay picked =
+        await showTimePicker(context: context, initialTime: TimeOfDay.now());
+
+    if (picked != null && picked != _selectedTime) {
+      setState(() {
+        _selectedTime = picked;
+      });
+    }
   }
 
   @override
@@ -145,13 +176,22 @@ class _TodoScreenState extends State<TodoScreenLogic> {
                     ),
                     actions: <Widget>[
                       FlatButton(
-                          onPressed: () async {
-                            var ur = UserDataRepository();
-                            var userEmail = await ur.getUserEmail();
-                            await createTodos(userEmail);
-                            Navigator.of(context).pop();
-                          },
-                          child: Text("Add"))
+                        onPressed: () async {
+                          await _selectDate(context);
+                          await _selectTime(context);
+                          Navigator.of(context).pop();
+                        },
+                        child: Text("Date & Time"),
+                      ),
+                      FlatButton(
+                        onPressed: () async {
+                          var ur = UserDataRepository();
+                          var userEmail = await ur.getUserEmail();
+                          await createTodos(userEmail);
+                          Navigator.of(context).pop();
+                        },
+                        child: Text("Add"),
+                      )
                     ],
                   );
                 });
@@ -162,32 +202,32 @@ class _TodoScreenState extends State<TodoScreenLogic> {
           ),
         ),
         body: ListView.builder(
-          shrinkWrap: true,
-          itemCount: this.widget.data.length,
-          itemBuilder: (context, index) {
-            return Dismissible(
-                onDismissed: (direction) {
-                  deleteTodos(todo[index]);
-                },
-                key: Key(todo[index]),
-                child: Card(
-                  elevation: 4,
-                  margin: EdgeInsets.all(8),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                  child: ListTile(
-                    title: Text(this.widget.data[index]),
-                    trailing: IconButton(
-                        icon: Icon(
-                          Icons.delete,
-                          color: Colors.red,
-                        ),
-                        onPressed: () {
-                          deleteTodos(todo[index]);
-                        }),
-                  ),
-                ));
-          }),
+            shrinkWrap: true,
+            itemCount: this.widget.data.length,
+            itemBuilder: (context, index) {
+              return Dismissible(
+                  onDismissed: (direction) {
+                    deleteTodos(todo[index]);
+                  },
+                  key: Key(todo[index]),
+                  child: Card(
+                    elevation: 4,
+                    margin: EdgeInsets.all(8),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                    child: ListTile(
+                      title: Text(this.widget.data[index]),
+                      trailing: IconButton(
+                          icon: Icon(
+                            Icons.delete,
+                            color: Colors.red,
+                          ),
+                          onPressed: () {
+                            deleteTodos(todo[index]);
+                          }),
+                    ),
+                  ));
+            }),
       ),
     );
   }
